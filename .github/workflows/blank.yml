@@ -8,9 +8,7 @@ name: CI
 # events but only for the master branch
 on:
   push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+    branches: [node_lts_latest]
   schedule:
     # run the build at midnight every night
     - cron: '0 0 * * *'
