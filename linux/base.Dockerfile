@@ -261,8 +261,8 @@ ENV POWERSHELL_DISTRIBUTION_CHANNEL CloudShell
 ENV POWERSHELL_UPDATECHECK Off
 
 # Install Chef Workstation
-RUN wget -nv -O chef-workstation_amd64.deb https://packages.chef.io/files/stable/chef-workstation/20.9.158/debian/10/chef-workstation_20.9.158-1_amd64.deb \
-  && echo af67dfbf705959eb0e4d4b663142a66b2a220b33aefc54b83197ad3f535b69ba chef-workstation_amd64.deb | sha256sum -c \
+RUN wget -nv -O chef-workstation_amd64.deb https://packages.chef.io/files/stable/chef-workstation/21.8.555/debian/10/chef-workstation_21.8.555-1_amd64.deb \
+  && echo 6479afe6aca5041450e579a2147667e1e60d87970531addbc2d7c218c6d864b7 chef-workstation_amd64.deb | sha256sum -c \
   && dpkg -i chef-workstation_amd64.deb \
   && rm -f chef-workstation_amd64.deb
 
