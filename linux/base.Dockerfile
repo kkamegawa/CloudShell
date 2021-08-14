@@ -53,7 +53,7 @@ RUN set -ex \
   done
 
 ENV NPM_CONFIG_LOGLEVEL warn
-ENV NODE_VERSION 14.17.4
+ENV NODE_VERSION 14.17.5
 ENV NODE_ENV production
 
 RUN curl -sSLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" \
@@ -204,8 +204,8 @@ RUN wget -nv -O puppet-tools.deb https://apt.puppet.com/puppet-tools-release-bus
   && rm -f puppet-tools.deb
 
 # install go
-RUN wget -nv -O go.tar.gz https://dl.google.com/go/go1.13.7.linux-amd64.tar.gz \
-  && echo b3dd4bd781a0271b33168e627f7f43886b4c5d1c794a4015abf34e99c6526ca3 go.tar.gz | sha256sum -c \
+RUN wget -nv -O go.tar.gz https://golang.org/dl/go1.16.7.linux-amd64.tar.gz \
+  && echo 7fe7a73f55ba3e2285da36f8b085e5c0159e9564ef5f63ee0ed6b818ade8ef04 go.tar.gz | sha256sum -c \
   && tar -xf go.tar.gz \
   && mv go /usr/local \
   && rm -f go.tar.gz
