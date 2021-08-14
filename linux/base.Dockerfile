@@ -284,8 +284,8 @@ RUN bash ./helmInstall.sh && rm -f ./helmInstall.sh
 
 # Copy and run the Draft install script, which fetches the latest release of Draft with
 # optimizations for running inside cloud shell.
-COPY ./linux/draftInstall.sh .
-RUN bash ./draftInstall.sh && rm -f ./draftInstall.sh
+# COPY ./linux/draftInstall.sh .
+# RUN bash ./draftInstall.sh && rm -f ./draftInstall.sh
 
 # Install Yeoman Generator and predefined templates
 RUN npm install -g yo \
