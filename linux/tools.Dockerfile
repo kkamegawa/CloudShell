@@ -4,8 +4,8 @@
 # won't be able to reach this location, but don't worry!
 
 # To build yourself locally, override this location with a local image tag. See README.md for more detail
-
-ARG IMAGE_LOCATION=cdpxlinux.azurecr.io/artifact/b787066e-c88f-4e20-ae65-e42a858c42ca/official/azure/cloudshell:1.0.20201030.1.base.master.0e24a3b1
+ARG IMAGE_LOCATION=cdpxb787066ec88f4e20ae65e42a858c42ca00.azurecr.io/official/azure/cloudshell:1.0.20201030.1.base.master.0e24a3b1
+#ARG IMAGE_LOCATION=cdpxb787066ec88f4e20ae65e42a858c42ca00.azurecr.io/official/azure/cloudshell:1.0.20220308.1.base.master.e4f39539
 
 # Copy from base build
 FROM ${IMAGE_LOCATION}
@@ -16,11 +16,9 @@ RUN wget -nv https://azurecliprod.blob.core.windows.net/cloudshell-release/azure
     && dpkg -i azure-cli-latest-buster.deb \
     && rm -f azure-cli-latest-buster.deb
 
-# Install latest SSHArc 0.2.0 from ClI package.
-RUN az extension add --system --yes --source https://ssharc.blob.core.windows.net/ssharc/ssh-0.2.0-py3-none-any.whl
-
 # Install any Azure CLI extensions that should be included by default.
 RUN az extension add --system --name ai-examples -y
+RUN az extension add --system --name ssh -y
 
 # EY: get an error when we try to install this.
 # RUN az extension add --system --name azure-cli-ml -y
@@ -88,13 +86,12 @@ RUN ltarget=$(readlink /usr/local/linkerd/bin/linkerd) && \
     if [ ! -f $ltarget ] ; then rm /usr/local/linkerd/bin/linkerd ; ln -s /usr/local/linkerd/bin/linkerd-stable* /usr/local/linkerd/bin/linkerd ; fi
 
 # Temp: fix ansible modules. Proper fix is to update base layer to use regular python for Ansible.
-RUN wget -nv -q https://raw.githubusercontent.com/ansible-collections/azure/dev/requirements-azure.txt \
-    && /opt/ansible/bin/python -m pip install -r requirements-azure.txt \
-    && rm requirements-azure.txt
+RUN /opt/ansible/bin/python -m pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements-azure.txt
 
 # Add user's home directories to PATH at the front so they can install tools which
 # override defaults
-ENV PATH ~/.local/bin:~/bin:$PATH
+# Add dotnet tools to PATH so users can install a tool using dotnet tools and can execute that command from any directory
+ENV PATH ~/.local/bin:~/bin:~/.dotnet/tools:$PATH
 
 # Set AZUREPS_HOST_ENVIRONMENT 
 ENV AZUREPS_HOST_ENVIRONMENT cloud-shell/1.0
