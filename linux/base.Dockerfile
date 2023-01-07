@@ -208,15 +208,15 @@ RUN export INSTALLROOT=/usr/local/linkerd \
 ENV PATH $PATH:/usr/local/linkerd/bin
 
 # Install Puppet-Bolt
-RUN wget -nv -O puppet-tools.deb https://apt.puppet.com/puppet-tools-release-buster.deb \
-  && dpkg -i puppet-tools.deb \
-  && apt-get update \
-  && bash ./aptinstall.sh puppet-bolt \
-  && rm -f puppet-tools.deb
+#RUN wget -nv -O puppet-tools.deb https://apt.puppet.com/puppet-tools-release-buster.deb \
+#  && dpkg -i puppet-tools.deb \
+#  && apt-get update \
+#  && bash ./aptinstall.sh puppet-bolt \
+#  && rm -f puppet-tools.deb
 
 # install go
-RUN wget -nv -O go.tar.gz https://golang.org/dl/go1.16.7.linux-amd64.tar.gz \
-  && echo 7fe7a73f55ba3e2285da36f8b085e5c0159e9564ef5f63ee0ed6b818ade8ef04 go.tar.gz | sha256sum -c \
+RUN wget -nv -O go.tar.gz https://go.dev/dl/go1.18.2.linux-amd64.tar.gz \
+  && echo e54bec97a1a5d230fc2f9ad0880fcbabb5888f30ed9666eca4a91c5a32e86cbc go.tar.gz | sha256sum -c \
   && tar -xf go.tar.gz \
   && mv go /usr/local \
   && rm -f go.tar.gz
