@@ -1,6 +1,3 @@
-
-
-
 Describe "Various programs installed with expected versions" {
  
     BeforeAll {
@@ -11,19 +8,18 @@ Describe "Various programs installed with expected versions" {
         }
     }
 
-    It "Base OS - CBL-D 10" {
+    It "Base OS - CBL-Mariner 2.0" {
 
         [System.Environment]::OSVersion.Platform | Should -Be 'Unix'
         $osDetails = Get-Content /etc/*release
-        $osDetails | Where-Object {$_.Contains('VERSION_ID="10"')} | Should -Not -BeNullOrEmpty
-        $osDetails | Where-Object {$_.Contains('NAME="Common Base Linux Delridge"')} | Should -Not -BeNullOrEmpty
+        $osDetails | Where-Object {$_.Contains('VERSION_ID="2.0"')} | Should -Not -BeNullOrEmpty
+        $osDetails | Where-Object {$_.Contains('NAME="Common Base Linux Mariner"')} | Should -Not -BeNullOrEmpty
     }
 
     It "Static Versions" {
         # These programs are installed explicitly with specific versions
-        $script:pmap["Node.JS"].Version | Should -Be '8.16.0'
-        $script:pmap["Jenkins X"].Version | Should -Be '1.3.107'
-        $script:pmap["PowerShell"].Version | Should -BeLike '7.2*'        
+        $script:pmap["Node.JS"].Version | Should -Be '16.17.1'
+        $script:pmap["PowerShell"].Version | Should -BeLike '7.3*'
     }
 
     It "Some Versions Installed" {
@@ -50,8 +46,7 @@ Describe "Various programs installed with expected versions" {
 
     It "Compare bash commands to baseline" {
         # command_list contains a list of all the files which should be installed
-        $command_diffs = bash -c "compgen -c | sort -u > /tests/installed_commands && diff /tests/command_list /tests/installed_commands"
-
+        $command_diffs = bash -c "compgen -c | sort -u > /tests/installed_commands && diff -w /tests/command_list /tests/installed_commands"
         # these may or may not be present depending on how tests were invoked
         $special = @(
             "profile.ps1", 
@@ -190,13 +185,13 @@ Describe "PowerShell Modules" {
 
     }
 
-    It "Az.GuestConfiguration PowerShell Module" {
+    It "GuestConfiguration PowerShell Module" {
 
-        $module = Get-Module -Name Az.GuestConfiguration -ListAvailable
+        $module = Get-Module -Name GuestConfiguration -ListAvailable
         $module | Should -Not -BeNullOrEmpty
 
-        # Az.GuestConfiguration module version must be 0.*.* or greater
-        $module.Version -like "0.*.*" | Should -Be $true
+        # GuestConfiguration module version must be 0.*.* or greater
+        $module.Version -like "4.*.*" | Should -Be $true
     }
 
     It "MicrosoftTeams PowerShell Module" {
@@ -209,8 +204,21 @@ Describe "PowerShell Modules" {
     }
 
     It "Microsoft.PowerShell.UnixCompleters PowerShell Module" {
-        
         $module = Get-Module -Name Microsoft.PowerShell.UnixCompleters -ListAvailable
+        $module | Should -Not -BeNullOrEmpty
+
+    }
+    
+    It "Microsoft.PowerShell.SecretManagement PowerShell Module" {
+        
+        $module = Get-Module -Name 'Microsoft.PowerShell.SecretManagement' -ListAvailable
+        $module | Should -Not -BeNullOrEmpty
+
+    }
+    
+    It "Microsoft.PowerShell.SecretStore PowerShell Module" {
+        
+        $module = Get-Module -Name 'Microsoft.PowerShell.SecretStore' -ListAvailable
         $module | Should -Not -BeNullOrEmpty
 
     }
@@ -222,10 +230,12 @@ Describe "PowerShell Modules" {
         @{ ModuleName = "AzureAD.Standard.Preview" }
         @{ ModuleName = "Az" }
         @{ ModuleName = "MicrosoftPowerBIMgmt" }
-        @{ ModuleName = "Az.GuestConfiguration" }
+        @{ ModuleName = "GuestConfiguration" }
         @{ ModuleName = "EXOPSSessionConnector" }
         @{ ModuleName = "MicrosoftTeams" }
         @{ ModuleName = "Microsoft.PowerShell.UnixCompleters" }
+        @{ ModuleName = "Microsoft.PowerShell.SecretManagement" }
+        @{ ModuleName = "Microsoft.PowerShell.SecretStore" }
     )
 
     It "Import-Module test for <ModuleName>" -TestCases $importModuleTestCases {

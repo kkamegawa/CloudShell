@@ -18,8 +18,10 @@ $moduleList = @(
     "AzurePSDrive",
     "MicrosoftPowerBIMgmt",
     "Az",
-    "Az.GuestConfiguration",
-    "Microsoft.PowerShell.UnixCompleters"
+    "GuestConfiguration",
+    "Microsoft.PowerShell.UnixCompleters",
+    "Microsoft.PowerShell.SecretManagement",
+    "Microsoft.PowerShell.SecretStore"
 )
 
 # set SkipAzInstallationChecks to avoid az check for AzInstallationChecks.json
