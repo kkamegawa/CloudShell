@@ -867,123 +867,6 @@ function Update-WinRMTrustedHosts {
     }
 }
 
-function Enter-AzVM
-{
-    <#
-        .DESCRIPTION
-        The Enter-AzVM cmdlet starts an interactive session with a single azure VM. During the
-        session, the commands that you type run on the azure VM, just as if you were typing directly on
-        the azure VM. You can have only one interactive session at a time.
-
-        To end the interactive session and disconnect from the azure VM type `exit`.
-
-        .PARAMETER Name
-        Specifies the computername
-
-        .PARAMETER ResourceGroupName
-        Provide the name of the resource group
-
-        .PARAMETER Credential
-        Provide Credential when connecting to Windows Targets
-
-        .PARAMETER UserName
-        Provide UserName when connecting to Linux Targets. When used with KeyFilePath parameter, identifies the user on the remote computer
-
-        .PARAMETER KeyFilePath
-        Provide SSH KeyFile Path when connecting to Linux Targets, if connection uses Key based authentication
-
-        .EXAMPLE
-        Enter-AzVM -Name WindowsVMName -ResourceGroup resourceGroup -Credential credential
-
-        .EXAMPLE
-        Enter-AzVM -Name LinuxVM -ResourceGroup resourceGroup -UserName username
-
-        .EXAMPLE
-        Enter-AzVM -Name LinuxVM -ResourceGroup resourceGroup -UserName username -KeyFilePath ~/.ssh/id_rsa
-    #>
-
-    param
-    (
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()]
-        [string]$Name,
-
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()]
-        [string]$ResourceGroupName,
-
-        [Parameter(Mandatory, ParameterSetName='wsman')]
-        [ValidateNotNullOrEmpty()]
-        [PSCredential]$Credential,
-
-        [Parameter(Mandatory, ParameterSetName='ssh')]
-        [ValidateNotNullOrEmpty()]
-        [string]$UserName,
-
-        [Parameter(ParameterSetName='ssh')]
-        [ValidateNotNullOrEmpty()]
-        [string]$KeyFilePath        
-    )
-
-    if(-not (Test-AzResourceGroup -ResourceGroupName $ResourceGroupName)) {
-        $badResourceGroup = $LocalizedData.TestAzResourceGroup -f ($ResourceGroupName)
-        throw [System.ArgumentException] $badResourceGroup
-    }
-
-    $osType = Get-OsType -Name $Name -ResourceGroupName $ResourceGroupName
-    if (-not $osType)
-    {
-        $badTargetVM = $LocalizedData.BadTargetVM
-        throw [System.ArgumentException] $badTargetVM
-    }
-
-    $testAzVMParams = @{'Name'=$Name;'ResourceGroupName'=$ResourceGroupName;'OsType'=$osType}
-    if ([OStype]::Windows -eq $osType)
-    {
-        if (-not $Credential)
-        {
-            $message = $LocalizedData.CredentialError
-            throw [System.ArgumentException] $message
-        }        
-    }
-
-    $cName = Test-AzVM @testAzVMParams
-    if(-not $cName) {
-        $message = $LocalizedData.GetAzureVMError -f ($Name)
-        throw [System.ArgumentException] $message
-    }
-
-    if ([OStype]::Windows -eq $osType)
-    {
-        Enter-PSSession -ComputerName $cName -Credential $Credential -UseSSL -SessionOption $sessionOption -Authentication Basic
-    }
-    elseif ([OStype]::Linux -eq $osType)
-    {
-        $enterPSSessionParams = @{'HostName'=$cName}
-
-        if ($KeyFilePath)
-        {
-                $enterPSSessionParams.Add('KeyFilePath',$KeyFilePath)
-        }
-
-        if ($Credential -and $Credential.UserName)
-        {
-            $enterPSSessionParams.Add('UserName',$Credential.UserName)            
-        }
-        elseif ($UserName)
-        {
-            $enterPSSessionParams.Add('UserName',$UserName)
-        }        
-        else
-        {
-            $message = $LocalizedData.UserNameError
-            throw [System.ArgumentException] $message
-        }
-
-        Enter-PSSession @enterPSSessionParams
-    }
-}
-
 function Invoke-AzVMCommand
 {
     <#
@@ -1885,13 +1768,15 @@ function Get-PackageVersion() {
     
     # Enumerate all APT packages with versions
     $packages = New-Object -TypeName System.Collections.ArrayList
-    apt list --installed 2> /dev/null | % { 
-        Write-Verbose "Apt: $_"
-        if ($_ -match "([^/]*)/[^ ]* ([^ ]*)") { 
-            $p = New-PackageInfo -Name $matches[1] -Version $matches[2] -Type "Apt"
-            $null = $packages.Add($p)
-        }
-    }
+
+    # TODO - find the regular expression to seperate the package name from the package version
+    # apt list --installed 2> /dev/null | % { 
+    #     Write-Verbose "Apt: $_"
+    #     if ($_ -match "([^/]*)/[^ ]* ([^ ]*)") { 
+    #         $p = New-PackageInfo -Name $matches[1] -Version $matches[2] -Type "Apt"
+    #         $null = $packages.Add($p)
+    #     }
+    # }
 
     # enumerate special packages
     $pwsh = New-PackageInfo -Name "PowerShell" -Version $PSVersionTable.PSVersion.ToString() -type "Special"
@@ -1917,7 +1802,6 @@ function Get-PackageVersion() {
 
     $packageVersionDetections = @(
         @{displayname = "Node.JS"; command = "node"; args = "--version"; match = "v(.*)"},
-        @{displayname = "Jenkins X"; command = "jx"; args = "version -n"; match = "jx\s+(.*)"},
         @{displayname = "Cloud Foundry CLI"; command = "cf"; args = "-v"; match = "cf version (.*)"},
         @{displayname = "Blobxfer"; command = "blobxfer"; args = "--version"; match = "blobxfer, version (.*)"},
         @{displayname = "Batch Shipyard"; command = "shipyard"; args = "--version"; match = "shipyard.py, version (.*)"},
@@ -1927,11 +1811,9 @@ function Get-PackageVersion() {
         @{displayname = "Go"; command = "go"; args = "version"; match = "go version go(\S+) .*"},
         @{displayname = "Packer"; command = "packer"; args = "version"; match = "Packer v(.+)"},
         @{displayname = "DC/OS CLI"; command = "dcos"; args = "--version"; match = "dcoscli.version=(.*)"},
-        @{displayname = "Chef Workstation"; command = "chef"; args = "-v"; match = "Chef Workstation version: (.*)"},
         @{displayname = "Ripgrep"; command = "rg"; args = "--help | head"; match = "ripgrep ([\d\.]+)$"},
-        @{displayname = "Docker-machine"; command = "docker-machine"; args = "version"; match = "docker-machine version ([\d\.]+),"},
         @{displayname = "Helm"; command = "helm"; args = "version --short"; match = "v(.+)"},
-        @{displayname = "Draft"; command = "draft"; args = "version --short"; match = "v(.+)"},
+        @{displayname = "Draft"; command = "draft"; args = "version"; match = "version:  (.+)"},
         @{displayname = "AZCopy"; command = "azcopy"; args = "--version"; match = "azcopy version (.+)"},
         @{displayname = "Azure CLI"; command = "az"; args = "version "; match = "`"azure-cli`": `"(.+)`""},
         @{displayname = "Kubectl"; command = "kubectl"; args = "version --client=true --short=true"; match = "Client Version: v(.+)"}
