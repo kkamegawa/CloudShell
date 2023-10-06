@@ -39,29 +39,29 @@ jobs:
         # You may pin to the exact commit or the version.
         # uses: TCPShield/gp-docker-action@65486288374aeae8705fc543405dc4d23de6060b
         uses: TCPShield/gp-docker-action@1.1.13
-          with:
-            github-username: ${{ github.repository_owner }}
-            # GitHub token to push Docker image to GitHub Container Registry
-            github-token: ${{ secrets.GITHUB_TOKEN }}
-            # Docker Image tag
-            # Dockerfile name
-            dockerfile: linux/base.Dockerfile
-            image-name: base_cloudshell
+        with:
+          github-username: ${{ github.repository_owner }}
+          # GitHub token to push Docker image to GitHub Container Registry
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Docker Image tag
+          # Dockerfile name
+          dockerfile: linux/base.Dockerfile
+          image-name: base_cloudshell
 
       - name: Build the tools.Dockerfile
         # You may pin to the exact commit or the version.
         # uses: TCPShield/gp-docker-action@65486288374aeae8705fc543405dc4d23de6060b
         uses: TCPShield/gp-docker-action@1.1.13
-          with:
-            # Github username to push Docker image from
-            github-username: ${{ github.repository_owner }}
-            # GitHub token to push Docker image to GitHub Container Registry
-            github-token: ${{ secrets.GITHUB_TOKEN }}
-            # Docker Image tag
-            # Dockerfile name
-            dockerfile: linux/tools.Dockerfile
-            image-name: tools_cloudshell
-            custom-args: --build-arg IMAGE_LOCATION=base_cloudshell
+        with:
+          # Github username to push Docker image from
+          github-username: ${{ github.repository_owner }}
+          # GitHub token to push Docker image to GitHub Container Registry
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Docker Image tag
+          # Dockerfile name
+          dockerfile: linux/tools.Dockerfile
+          image-name: tools_cloudshell
+          custom-args: --build-arg IMAGE_LOCATION=base_cloudshell
 
       # Run the test cases
       - name: Run the test cases
