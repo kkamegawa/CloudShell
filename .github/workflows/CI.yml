@@ -57,13 +57,3 @@ jobs:
           --data "{
             \"body\": \"Image size with this change is base: $(($BASE_SIZE / 1048576))MB, tools: $(($TOOLS_SIZE / 1048576))MB. \"
             }"
-      - name: Azure Container Registry Login
-        uses: Azure/docker-login@v1
-        with:
-          # Container registry username
-          username: ${{ secrets.ACR_USER }}
-          # Container registry password
-          password: ${{ secrets.ACR_PASSWORD }}
-          # Container registry server url
-          login-server: ${{ secrets.ACR_SERVER}}
-      - run: docker push ${{ secrets.ACR_SERVER}}/tools_cloudshell:${{ github.sha }}
