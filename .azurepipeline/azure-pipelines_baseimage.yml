@@ -12,7 +12,7 @@ variables:
   group: GitHubCloudShell
   # Container registry service connection established during pipeline creation
   dockerfilePath: '$(Build.SourcesDirectory)/linux/base.Dockerfile'
-  tag: '$(Build.BuildId)'
+  tag: '$(Build.BuildNumber)'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
