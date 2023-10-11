@@ -33,5 +33,5 @@ stages:
         command: 'buildAndPush'
         Dockerfile: '$(dockerfilePath)'
         containerRegistry: kkcontainer
-        tags: |
-          $(tag)
+#        tags: |
+#          $(tag)
