@@ -33,5 +33,6 @@ stages:
         command: 'buildAndPush'
         Dockerfile: '$(dockerfilePath)'
         containerRegistry: kkcontainer
-#        tags: |
-#          $(tag)
+        buildContext: $(Build.SourcesDirectory)/linux/.
+        tags: |
+          $(tag)
