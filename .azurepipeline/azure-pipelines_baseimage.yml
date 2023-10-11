@@ -12,7 +12,7 @@ variables:
   group: GitHubCloudShell
   # Container registry service connection established during pipeline creation
   dockerfilePath: '$(Build.SourcesDirectory)/linux/base.Dockerfile'
-  tag: '$(Build.BuildNumber)'
+  tag: '$(Build.BuildId)'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -29,10 +29,11 @@ stages:
     - task: Docker@2
       displayName: Build and push an image to container registry
       inputs:
-        repository: '$(imageRepository)'
+        repository: $(imageRepository)
         command: 'buildAndPush'
-        Dockerfile: '$(dockerfilePath)'
+        Dockerfile: $(dockerfilePath)
         containerRegistry: kkcontainer
-        buildContext: $(Build.SourcesDirectory)/linux/.
+        buildContext: '**'
+        container: 
         tags: |
-          $(tag)
+          $(Build.BuildId)
