@@ -33,7 +33,7 @@ stages:
         command: 'buildAndPush'
         Dockerfile: $(dockerfilePath)
         containerRegistry: kkcontainer
-        buildContext: '**'
+        buildContext: '$(Build.SourcesDirectory)/.'
         container: 
         tags: |
           $(Build.BuildId)
