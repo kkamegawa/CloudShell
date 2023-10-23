@@ -2,8 +2,15 @@
 # Build and push an image to Azure Container Registry
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
-trigger:
-- master
+trigger: none
+
+schedules:
+  - cron: "0 3 1,15 * *"
+    displayName: By-Weekly build
+    branches:
+      include:
+      - master
+    always: true
 
 resources:
 - repo: self
@@ -12,7 +19,6 @@ variables:
   group: GitHubCloudShell
   # Container registry service connection established during pipeline creation
   dockerfilePath: '$(Build.SourcesDirectory)/linux/base.Dockerfile'
-  tag: '$(Build.BuildId)'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -32,7 +38,7 @@ stages:
         repository: basecloudshell
         command: 'buildAndPush'
         Dockerfile: $(dockerfilePath)
-        containerRegistry: kkcontainer
+        containerRegistry: $(containerRegistry)
         buildContext: '$(Build.SourcesDirectory)/.'
         container: 
         tags: |
