@@ -55,4 +55,4 @@ stages:
           az acr manifest list-metadata --name $env:IMAGE_REPOSITRY  --registry $env:DOCKER_CONNECTIONS  --orderby time_asc -o tsv --query "[?lastUpdateTime < $limit].[digest, lastUpdateTime]"
       env:
         IMAGE_REPOSITRY: $(imageRepository)
-        DOCKER_CONNECTIONS: $(dockerRegistryServiceConnection)
+        DOCKER_CONNECTIONS: $(containerRegistry)
