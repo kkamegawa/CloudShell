@@ -34,21 +34,31 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
-    - task: Docker@2
-      displayName: Build image
+    - task: AzureCLI@2
       inputs:
-        containerRegistry: $(containerRegistry)
-        repository: '$(imageRepository)'
-        command: 'build'
-        Dockerfile: '$(dockerfilePath)'
-        buildContext: '$(Build.SourcesDirectory)/.'
-    - task: Docker@2
-      displayName: push an image to container registry
+        azureSubscription: AzureContainerRegistry
+        scriptType: 'pscore'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          docker build -t myazurecloudshell --build-arg IMAGE_LOCATION=$env:IMAGELOCATION -f linux/tools.Dockerfile $(Build.SourcesDirectory)/.
+          docker image tag myazurecloudshell "$env:CONTAINERREGISTRY/$env:CONTAINERNAME/:latest"
+          docker image tag myazurecloudshell "$env:CONTAINERREGISTRY/$env:CONTAINERNAME/:$env:TAG"
+          docker image push -all-tags $env:CONTAINERREGISTRY
+      env:
+        IMAGELOCATION: $(baseimage)
+        TAG: $(Build.BuildId)
+        CONTAINERREGISTRY: $(containerRegistry)
+        CONTAINERNAME: $(mycloudshell)
+    - task: AzureCLI@2
+      condition: succeeded()
       inputs:
-        containerRegistry: $(containerRegistry)
-        repository: 'azurecloudshell'
-        command: 'push'
-        arguments: '$(baseimage)'
-        tags: |
-          $(Build.BuildId)
-          
+        azureSubscription: AzureContainerRegistry
+        scriptType: 'pscore'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          $limit = [datetime]::Now.AddDays(-2).tostring('yyy-MM-dd')
+          az acr manifest list-metadata --name $env:CONTAINERNAME  --registry $env:DOCKER_CONNECTIONS  --orderby time_asc -o tsv --query "[?lastUpdateTime < $limit].[digest, lastUpdateTime]" \
+            | xargs -I% az acr repository delete --name $env:containerRegistry --image $CONTAINERNAME@% --yes
+      env:
+        CONTAINERNAME: $(mycloudshell)
+        DOCKER_CONNECTIONS: $(containerRegistry)
