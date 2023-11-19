@@ -41,8 +41,8 @@ stages:
         scriptLocation: 'inlineScript'
         inlineScript: |
           docker build -t myazurecloudshell --build-arg IMAGE_LOCATION=$env:IMAGELOCATION -f linux/tools.Dockerfile $(Build.SourcesDirectory)/.
-          docker image tag myazurecloudshell "$env:CONTAINERREGISTRY/$env:CONTAINERNAME/:latest"
-          docker image tag myazurecloudshell "$env:CONTAINERREGISTRY/$env:CONTAINERNAME/:$env:TAG"
+          docker image tag myazurecloudshell $env:CONTAINERREGISTRY/$env:CONTAINERNAME/:latest
+          docker image tag myazurecloudshell $env:CONTAINERREGISTRY/$env:CONTAINERNAME/:$env:TAG
           docker image push -all-tags $env:CONTAINERREGISTRY
       env:
         IMAGELOCATION: $(baseimage)
