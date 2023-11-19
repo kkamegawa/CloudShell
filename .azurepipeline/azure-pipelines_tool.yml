@@ -15,6 +15,8 @@ trigger: none
 resources:
 - repo: self
 
+pool: 'ubuntu-latest'
+
 variables:
   group: GitHubCloudShell
   # Container registry service connection established during pipeline creation
@@ -34,21 +36,17 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
-    - task: AzureCLI@2
+    - task: Docker@2
       inputs:
-        azureSubscription: AzureContainerRegistry
-        scriptType: 'pscore'
-        scriptLocation: 'inlineScript'
-        inlineScript: |
-          docker build -t myazurecloudshell --build-arg IMAGE_LOCATION=$env:IMAGELOCATION -f linux/tools.Dockerfile $(Build.SourcesDirectory)/.
-          docker image tag myazurecloudshell $env:CONTAINERREGISTRY/$env:CONTAINERNAME/:latest
-          docker image tag myazurecloudshell $env:CONTAINERREGISTRY/$env:CONTAINERNAME/:$env:TAG
-          docker image push -all-tags $env:CONTAINERREGISTRY
-      env:
-        IMAGELOCATION: $(baseimage)
-        TAG: $(Build.BuildId)
-        CONTAINERREGISTRY: $(containerRegistry)
-        CONTAINERNAME: $(mycloudshell)
+        containerRegistry: 'kkcontainer'
+        repository: 'myazurecloudshell'
+        command: 'build'
+        Dockerfile: 'linux/tools.Dockerfile'
+        buildContext: '$(Build.SourcesDirectory)/.'
+        tags: |
+          $(Build.BuildId)
+          latest
+        arguments: $(imagelocation)
     - task: AzureCLI@2
       condition: succeeded()
       inputs:
