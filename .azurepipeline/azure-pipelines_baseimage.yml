@@ -39,7 +39,7 @@ stages:
         repository: basecloudshell
         command: 'buildAndPush'
         Dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
+        containerRegistry: kkcontainer
         buildContext: '$(Build.SourcesDirectory)/.'
         container: 
         tags: |
