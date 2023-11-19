@@ -47,7 +47,7 @@ stages:
     - task: AzureCLI@2
       condition: succeeded()
       inputs:
-        azureSubscription: $(ServiceConnection)
+        azureSubscription: AzureContainerRegistry
         scriptType: 'pscore'
         scriptLocation: 'inlineScript'
         inlineScript: |
