@@ -12,6 +12,7 @@ schedules:
       - master
     always: true
 
+
 resources:
 - repo: self
 
@@ -42,4 +43,13 @@ stages:
         buildContext: '$(Build.SourcesDirectory)/.'
         container: 
         tags: |
-          $(Build.BuildId)
+            $(Build.BuildId)
+    - task: AzureCLI@2
+      condition: succeeded()
+      inputs:
+        azureSubscription: $(ServiceConnection)
+        scriptType: 'pscore'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          $limit = [datetime]::Now.AddDays(-2).tostring('yyy-MM-dd')
+          az acr manifest list-metadata --name $(imageRepository) --registry $(containerRegistry) --orderby time_asc -o tsv --query "[?lastUpdateTime < $limit].[digest, lastUpdateTime]"
