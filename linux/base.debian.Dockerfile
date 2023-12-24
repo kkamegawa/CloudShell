@@ -1,0 +1,111 @@
+FROM debian:12
+
+SHELL ["/bin/bash","-c"]
+
+RUN apt-get update && apt-get install -y curl
+
+ENV NPM_CONFIG_LOGLEVEL warn
+ENV NODE_ENV production
+ENV NODE_OPTIONS=--tls-cipher-list='ECDHE-RSA-AES128-GCM-SHA256:!RC4'
+
+RUN apt-get install -y \ 
+  xz \
+  gpgme \
+  gnupg2 \
+  autoconf \
+  ansible \
+  bash-completion \
+  build-essential \
+  binutils \
+  ca-certificates \
+  ca-certificates-legacy \
+  chkconfig \
+  cifs-utils \
+  bind9-utils \
+  dos2unix \
+  e2fsprogs \
+  emacs \
+  gawk \
+  git \
+  glibc-lang \
+  glibc-i18n \
+  grep \
+  gzip \
+  initscripts \
+  iptables \
+  iputils \
+  msopenjdk-17 \
+  jq \
+  less \
+  libffi \
+  libffi-devel \
+  libtool \
+  lz4 \
+  openssl \
+  openssl-libs \
+  openssl-devel \
+  man-db \
+  moby-cli \
+  moby-engine \
+  msodbcsql18 \
+  mssql-tools18 \
+  mysql \
+  nano \
+  net-tools \
+  parallel \
+  patch \
+  pkg-config \
+  postgresql-libs \
+  postgresql \
+  powershell \
+  python3 \
+  python3-pip \
+  python3-virtualenv \
+  python3-libs \
+  python3-devel \
+  puppet \
+  rpm \
+  rsync \
+  sed \
+  sudo \
+  tar \
+  tmux \
+  unixODBC \
+  unzip \
+  util-linux \
+  vim \
+  wget \
+  which \
+  zip \
+  zsh \
+  maven3 \
+  jx \
+  cf-cli \
+  golang \
+  ruby \
+  rubygems \
+  packer \
+  dcos-cli \
+  ripgrep \
+  helm \
+  azcopy \
+  apparmor-parser \
+  apparmor-utils \
+  cronie \
+  ebtables-legacy \
+  fakeroot \
+  file \
+  lsb-release \
+  ncompress \
+  pigz \
+  psmisc \
+  procps \
+  shared-mime-info \
+  sysstat \
+  xauth \
+  screen \
+  postgresql-devel \
+  gh \
+  redis \
+  cpio \
+  gettext

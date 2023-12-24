@@ -8,7 +8,10 @@ ENV NPM_CONFIG_LOGLEVEL warn
 ENV NODE_ENV production
 ENV NODE_OPTIONS=--tls-cipher-list='ECDHE-RSA-AES128-GCM-SHA256:!RC4'
 
-RUN apt-get install curl \ 
+RUN apt-get install  xz   gpgme  gnupg2  autoconf 
+
+
+RUN apt-get install  \ 
   xz \
   gpgme \
   gnupg2 \
@@ -19,13 +22,11 @@ RUN apt-get install curl \
   binutils \
   ca-certificates \
   ca-certificates-legacy \
-  chkconfig \
+#  chkconfig \
   cifs-utils \
   curl \
-  bind-utils \
+  bind9-utils \
   dos2unix \
-  dotnet-runtime-7.0 \
-  dotnet-sdk-7.0 \
   e2fsprogs \
   emacs \
   gawk \
@@ -34,7 +35,7 @@ RUN apt-get install curl \
   glibc-i18n \
   grep \
   gzip \
-  initscripts \
+#  initscripts \
   iptables \
   iputils \
   msopenjdk-17 \
