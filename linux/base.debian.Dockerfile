@@ -2,15 +2,27 @@ FROM debian:12
 
 SHELL ["/bin/bash","-c"]
 
-RUN apt-get update && apt-get install -y curl
+RUN apt-get update && apt-get install -y curl wget
+
+RUN apt-get install wget lsb-release -y
+RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+RUN dpkg -i packages-microsoft-prod.deb
+
+# msopenjdk 21をダウンロードしてインストール
+RUN wget https://aka.ms/download-jdk/microsoft-jdk-21.0.1-linux-x64.tar.gz
+RUN tar xvf microsoft-jdk-21.0.1-linux-x64.tar.gz
+RUN mv msopenjdk-21 /usr/lib/jvm/
+RUN update-alternatives --install /usr/bin/java java /usr/lib/jvm/msopenjdk-21/bin/java 1
+RUN update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/msopenjdk-21/bin/javac 1
+
+# 環境変数を設定
+ENV JAVA_HOME /usr/lib/jvm/msopenjdk-21
 
 ENV NPM_CONFIG_LOGLEVEL warn
 ENV NODE_ENV production
 ENV NODE_OPTIONS=--tls-cipher-list='ECDHE-RSA-AES128-GCM-SHA256:!RC4'
 
 RUN apt-get install -y \ 
-  xz \
-  gpgme \
   gnupg2 \
   autoconf \
   ansible \
@@ -18,8 +30,6 @@ RUN apt-get install -y \
   build-essential \
   binutils \
   ca-certificates \
-  ca-certificates-legacy \
-  chkconfig \
   cifs-utils \
   bind9-utils \
   dos2unix \
@@ -27,42 +37,26 @@ RUN apt-get install -y \
   emacs \
   gawk \
   git \
-  glibc-lang \
-  glibc-i18n \
   grep \
   gzip \
   initscripts \
   iptables \
-  iputils \
-  msopenjdk-17 \
   jq \
   less \
-  libffi \
-  libffi-devel \
   libtool \
   lz4 \
   openssl \
-  openssl-libs \
-  openssl-devel \
   man-db \
-  moby-cli \
-  moby-engine \
-  msodbcsql18 \
-  mssql-tools18 \
-  mysql \
   nano \
   net-tools \
   parallel \
   patch \
   pkg-config \
-  postgresql-libs \
   postgresql \
   powershell \
   python3 \
   python3-pip \
   python3-virtualenv \
-  python3-libs \
-  python3-devel \
   puppet \
   rpm \
   rsync \
@@ -70,11 +64,9 @@ RUN apt-get install -y \
   sudo \
   tar \
   tmux \
-  unixODBC \
   unzip \
   util-linux \
   vim \
-  wget \
   which \
   zip \
   zsh \
@@ -87,12 +79,10 @@ RUN apt-get install -y \
   packer \
   dcos-cli \
   ripgrep \
-  helm \
   azcopy \
   apparmor-parser \
   apparmor-utils \
   cronie \
-  ebtables-legacy \
   fakeroot \
   file \
   lsb-release \
@@ -104,7 +94,6 @@ RUN apt-get install -y \
   sysstat \
   xauth \
   screen \
-  postgresql-devel \
   gh \
   redis \
   cpio \

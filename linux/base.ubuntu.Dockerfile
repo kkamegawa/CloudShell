@@ -2,13 +2,19 @@ FROM ubuntu:jammy
 
 SHELL ["/bin/bash","-c"]
 
-RUN apt-get update && apt-get install -y curl
+RUN apt-get update 
+RUN apt-get install -y curl wget
+
+# Valid values are only '18.04', '20.04', and '22.04'
+# For other versions of Ubuntu, please use the tar.gz package
+RUN wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+RUN dpkg -i packages-microsoft-prod.deb
 
 ENV NPM_CONFIG_LOGLEVEL warn
 ENV NODE_ENV production
 ENV NODE_OPTIONS=--tls-cipher-list='ECDHE-RSA-AES128-GCM-SHA256:!RC4'
 
-RUN apt-get install  xz   gpgme  gnupg2  autoconf 
+RUN apt-get install -h  xz   gpgme  gnupg2  autoconf 
 
 
 RUN apt-get install  \ 
