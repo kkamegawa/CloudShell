@@ -25,7 +25,7 @@ RUN bash ./tdnfinstall.sh \
 
 # Install nodejs
 RUN bash ./tdnfinstall.sh \
-  nodejs
+  nodejs-18
 
 ENV NPM_CONFIG_LOGLEVEL warn
 ENV NODE_ENV production
@@ -49,8 +49,8 @@ RUN bash ./tdnfinstall.sh \
   curl \
   bind-utils \
   dos2unix \
-  dotnet-runtime-7.0 \
-  dotnet-sdk-7.0 \
+  dotnet-runtime-8.0 \
+  dotnet-sdk-8.0 \
   e2fsprogs \
   emacs \
   gawk \
@@ -236,7 +236,8 @@ ENV POWERSHELL_UPDATECHECK Off
 
 # Install Yeoman Generator and predefined templates
 RUN npm install -g yo \
-  && npm install -g generator-az-terra-module
+  && npm install -g generator-az-terra-module \
+  && npm install -g npm@latest
 
 
 # Copy and run script to Install powershell modules
