@@ -14,6 +14,8 @@
 # https://github.com/microsoft/CBL-Mariner
 FROM mcr.microsoft.com/cbl-mariner/base/core:2.0
 
+ARG TARGETPLATFORM
+
 SHELL ["/bin/bash","-c"]
 
 RUN tdnf update -y --refresh
@@ -74,8 +76,6 @@ RUN bash ./tdnfinstall.sh \
   man-db \
   moby-cli \
   moby-engine \
-  msodbcsql18 \
-  mssql-tools18 \
   mysql \
   nano \
   net-tools \
@@ -137,6 +137,8 @@ RUN bash ./tdnfinstall.sh \
   cpio \
   gettext
 
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then bash ./tdnfinstall.sh msodbcsql18  mssql-tools18; fi 
+
 # Install Terraform
 
 RUN TF_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r -M ".current_version") \
@@ -150,14 +152,14 @@ RUN TF_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform
 
 
 # Install azure-functions-core-tools
-RUN wget -nv -O Azure.Functions.Cli.zip `curl -fSsL https://api.github.com/repos/Azure/azure-functions-core-tools/releases/latest | grep "url.*linux-x64" | grep -v "sha2" | cut -d '"' -f4` \
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then wget -nv -O Azure.Functions.Cli.zip `curl -fSsL https://api.github.com/repos/Azure/azure-functions-core-tools/releases/latest | grep "url.*linux-x64" | grep -v "sha2" | cut -d '"' -f4` \
   && unzip -d azure-functions-cli Azure.Functions.Cli.zip \
   && chmod +x azure-functions-cli/func \
   && chmod +x azure-functions-cli/gozip \
   && mv -v azure-functions-cli /opt \
   && ln -sf /opt/azure-functions-cli/func /usr/bin/func \
   && ln -sf /opt/azure-functions-cli/gozip /usr/bin/gozip \
-  && rm -r Azure.Functions.Cli.zip
+  && rm -r Azure.Functions.Cli.zip; fi
 
 
 # Setup locale to en_US.utf8
