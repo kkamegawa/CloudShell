@@ -40,6 +40,9 @@ WORKDIR /usr/cloudshell
 # Install Office 365 CLI templates
 RUN npm install -q -g @pnp/cli-microsoft365
 
+# Install Azure Static Web Apps CLI
+RUN npm install -g @azure/static-web-apps-cli
+
 # Install Bicep CLI
 RUN curl -Lo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-linux-x64 \
   && chmod +x ./bicep \
