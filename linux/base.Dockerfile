@@ -171,7 +171,7 @@ ENV LANG="en_US.utf8"
 RUN pip3 install --upgrade sfctl \
   && pip3 install --upgrade mssql-scripter
 
-# Install Blobxfer and Batch-Shipyard in isolated virtualenvs
+# Install Blobxfer  in isolated virtualenvs
 COPY ./linux/blobxfer /usr/local/bin
 RUN chmod 755 /usr/local/bin/blobxfer \
   && pip3 install virtualenv \
