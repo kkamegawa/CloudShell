@@ -1211,6 +1211,7 @@ svnrdump
 svnserve
 svnsync
 svnversion
+swa
 swaplabel
 swapoff
 swapon
