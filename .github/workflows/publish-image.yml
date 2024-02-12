@@ -8,7 +8,10 @@ name: Docker
 on:
   push:
     branches: [ "master" ]
-    # Publish semver tags as releases.
+    paths-ignore: 
+      - '.azurepipeline/**'
+      - '.github/**'
+      # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
   pull_request:
     branches: [ "master" ]
@@ -34,6 +37,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
