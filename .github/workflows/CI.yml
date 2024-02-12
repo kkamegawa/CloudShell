@@ -11,6 +11,7 @@ on:
     branches: [master]
     paths-ignore: 
       - '.azurepipeline/**'
+      - '.github/**'      
   pull_request:
     branches: [master]
   schedule:
