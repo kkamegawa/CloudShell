@@ -13,11 +13,8 @@ RUN tdnf clean all
 RUN tdnf repolist --refresh
 RUN ACCEPT_EULA=Y tdnf update -y
 
-# Install latest Azure CLI package. CLI team drops latest (pre-release) package here prior to public release
-# We don't support using this location elsewhere - it may be removed or updated without notice
-RUN wget https://azurecliprod.blob.core.windows.net/cloudshell-release/azure-cli-latest-mariner2.0.rpm \
-    && tdnf install -y ./azure-cli-latest-mariner2.0.rpm \
-    && rm azure-cli-latest-mariner2.0.rpm
+# Install latest Azure CLI package. 
+RUN bash ./tdnfinstall.sh azure-cli
 
 # Install any Azure CLI extensions that should be included by default.
 RUN az extension add --system --name ai-examples -y \
@@ -44,10 +41,15 @@ RUN npm install -q -g @pnp/cli-microsoft365
 RUN npm install -g @azure/static-web-apps-cli
 
 # Install Bicep CLI
-RUN curl -Lo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-linux-x64 \
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then curl -Lo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-linux-x64 \
   && chmod +x ./bicep \
   && mv ./bicep /usr/local/bin/bicep \
-  && bicep --help
+  && bicep --help; fi
+
+RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then curl -Lo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-linux-arm64 \
+  && chmod +x ./bicep \
+  && mv ./bicep /usr/local/bin/bicep \
+  && bicep --help; fi
 
 # Temp: fix ansible modules. Proper fix is to update base layer to use regular python for Ansible.
 RUN mkdir -p /usr/share/ansible/collections/ansible_collections/azure/azcollection/ \
