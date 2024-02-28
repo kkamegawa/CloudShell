@@ -9,6 +9,8 @@ ARG IMAGE_LOCATION=cdpxb787066ec88f4e20ae65e42a858c42ca00.azurecr.io/official/cl
 # Copy from base build
 FROM ${IMAGE_LOCATION}
 
+ARG TARGETPLATFORM
+
 RUN tdnf clean all
 RUN tdnf repolist --refresh
 RUN ACCEPT_EULA=Y tdnf update -y
