@@ -175,6 +175,9 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then wget -nv -O Azure.Functions.C
 RUN echo en_US UTF-8 >> /etc/locale.conf && locale-gen.sh
 ENV LANG="en_US.utf8"
 
+# update latest pip
+RUN /usr/bin/python3.9 -m pip install --upgrade pip
+
 # Update pip and Install Service Fabric CLI
 # Install mssql-scripter
 RUN pip3 install --upgrade sfctl \
