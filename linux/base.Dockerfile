@@ -140,8 +140,8 @@ RUN bash ./tdnfinstall.sh \
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then bash ./tdnfinstall.sh msodbcsql18  mssql-tools18; fi 
 
 # Install Terraform
-RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then
-RUN TF_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r -M ".current_version") \
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+TF_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r -M ".current_version") \
   && wget -nv -O terraform.zip "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip" \
   && wget -nv -O terraform.sha256 "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_SHA256SUMS" \
   && echo "$(grep "${TF_VERSION}_linux_amd64.zip" terraform.sha256 | awk '{print $1}')  terraform.zip" | sha256sum -c \
@@ -150,8 +150,8 @@ RUN TF_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform
   && rm -f terraform.zip terraform.sha256 \
   && unset TF_VERSION;fi
 
-RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then
-RUN TF_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r -M ".current_version") \
+RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+TF_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r -M ".current_version") \
   && wget -nv -O terraform.zip "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_arm64.zip" \
   && wget -nv -O terraform.sha256 "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_SHA256SUMS" \
   && echo "$(grep "${TF_VERSION}_linux_arm64.zip" terraform.sha256 | awk '{print $1}')  terraform.zip" | sha256sum -c \
