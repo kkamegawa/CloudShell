@@ -64,6 +64,9 @@ RUN mkdir -p /usr/share/ansible/collections/ansible_collections/azure/azcollecti
     && wget -nv -q -O /usr/share/ansible/collections/ansible_collections/azure/azcollection/requirements-azure.txt https://raw.githubusercontent.com/ansible-collections/azure/dev/requirements-azure.txt \
     && /opt/ansible/bin/python -m pip install -r /usr/share/ansible/collections/ansible_collections/azure/azcollection/requirements-azure.txt
 
+# Update pip
+RUN /opt/ansible/bin/python -m pip install --upgrade pip
+
 # Copy and run script to Install powershell modules and setup Powershell machine profile
 COPY ./linux/powershell/PSCloudShellUtility/ /usr/local/share/powershell/Modules/PSCloudShellUtility/
 COPY ./linux/powershell/ powershell
