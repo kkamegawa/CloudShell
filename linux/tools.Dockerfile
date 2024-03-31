@@ -29,12 +29,12 @@ RUN az aks install-cli \
     && chmod +x /usr/local/bin/kubelogin
 
 # Install vscode
-RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then RUN wget -nv -O vscode.tar.gz "https://code.visualstudio.com/sha/download?build=insider&os=cli-alpine-x64" \
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then wget -nv -O vscode.tar.gz "https://code.visualstudio.com/sha/download?build=insider&os=cli-alpine-x64" \
     && tar -xvzf vscode.tar.gz \
     && mv ./code-insiders /bin/vscode \
     && rm vscode.tar.gz ; fi
 
-RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then RUN wget -nv -O vscode.tar.gz "https://code.visualstudio.com/sha/download?build=insider&os=cli-alpine-arm64" \
+RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then wget -nv -O vscode.tar.gz "https://code.visualstudio.com/sha/download?build=insider&os=cli-alpine-arm64" \
     && tar -xvzf vscode.tar.gz \
     && mv ./code-insiders /bin/vscode \
     && rm vscode.tar.gz ; fi
