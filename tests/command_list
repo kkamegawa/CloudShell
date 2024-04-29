@@ -108,7 +108,6 @@ bison
 blkdiscard
 blkid
 blkzone
-blobxfer
 blockdev
 break
 bridge

@@ -1,5 +1,5 @@
-# base.Dockerfile contains components which are large and change less frequently. 
-# tools.Dockerfile contains the smaller, more frequently-updated components. 
+# base.Dockerfile contains components which are large and change less frequently.
+# tools.Dockerfile contains the smaller, more frequently-updated components.
 
 # Within Azure, the image layers
 # built from this file are cached in a number of locations to speed up container startup time. A manual
@@ -23,17 +23,10 @@ RUN tdnf update -y --refresh
 COPY linux/tdnfinstall.sh .
 
 RUN bash ./tdnfinstall.sh \
-  mariner-repos-extended
-
-# Install nodejs
-RUN bash ./tdnfinstall.sh \
-  nodejs18
-
-ENV NPM_CONFIG_LOGLEVEL warn
-ENV NODE_ENV production
-ENV NODE_OPTIONS=--tls-cipher-list='ECDHE-RSA-AES128-GCM-SHA256:!RC4'
-
-RUN bash ./tdnfinstall.sh \
+  mariner-repos-extended && \
+  tdnf repolist --refresh && \
+  bash ./tdnfinstall.sh \
+  nodejs18 \
   curl \
   xz \
   git \
@@ -135,7 +128,13 @@ RUN bash ./tdnfinstall.sh \
   gh \
   redis \
   cpio \
-  gettext
+  gettext && \
+  tdnf clean all && \
+  rm -rf /var/cache/tdnf/*
+
+ENV NPM_CONFIG_LOGLEVEL warn
+ENV NODE_ENV production
+ENV NODE_OPTIONS=--tls-cipher-list='ECDHE-RSA-AES128-GCM-SHA256:!RC4'
 
 # Get latest version of Terraform.
 # Customers require the latest version of Terraform.
@@ -171,14 +170,6 @@ RUN /usr/bin/python3.9 -m pip install --upgrade pip
 RUN pip3 install --upgrade sfctl \
   && pip3 install --upgrade mssql-scripter
 
-# Install Blobxfer  in isolated virtualenvs
-COPY ./linux/blobxfer /usr/local/bin
-RUN chmod 755 /usr/local/bin/blobxfer \
-  && pip3 install virtualenv \
-  && cd /opt \
-  && virtualenv -p python3 blobxfer \
-  && /bin/bash -c "source blobxfer/bin/activate && pip3 install blobxfer && deactivate"
-
 # # BEGIN: Install Ansible in isolated Virtual Environment
 COPY ./linux/ansible/ansible*  /usr/local/bin/
 RUN chmod 755 /usr/local/bin/ansible* \
@@ -213,11 +204,9 @@ ENV POWERSHELL_DISTRIBUTION_CHANNEL CloudShell
 # don't tell users to upgrade, they can't
 ENV POWERSHELL_UPDATECHECK Off
 
-# Install Yeoman Generator and predefined templates
+# Install Yeoman Generator
 RUN npm install -g yo \
-  && npm install -g generator-az-terra-module \
   && npm install -g npm@latest
-
 
 # Copy and run script to Install powershell modules
 COPY ./linux/powershell/ powershell
