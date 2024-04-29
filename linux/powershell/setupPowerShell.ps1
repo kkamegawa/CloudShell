@@ -153,6 +153,9 @@ try {
         PowerShellGet\Install-Module -Name Microsoft.PowerShell.SecretManagement @prodAllUsers
         PowerShellGet\Install-Module -Name Microsoft.PowerShell.SecretStore @prodAllUsers
 
+        # Install module PnP.PowerShell
+        PowerShellGet\Install-Module -Name PnP.PowerShell @prodAllUsers
+
         # With older base image builds, teams 1.1.6 is already installed 
         if (Get-Module MicrosoftTeams -ListAvailable) {
             # For some odd reason, Update-Module was creating the MicrosoftTeams module twice with different version numbers.
