@@ -147,17 +147,6 @@ RUN TF_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform
   && rm -f terraform.zip terraform.sha256 \
   && unset TF_VERSION
 
-# Install azure-functions-core-tools
-RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then wget -nv -O Azure.Functions.Cli.zip `curl -fSsL https://api.github.com/repos/Azure/azure-functions-core-tools/releases/latest | grep "url.*linux-x64" | grep -v "sha2" | cut -d '"' -f4` \
-  && unzip -d azure-functions-cli Azure.Functions.Cli.zip \
-  && chmod +x azure-functions-cli/func \
-  && chmod +x azure-functions-cli/gozip \
-  && mv -v azure-functions-cli /opt \
-  && ln -sf /opt/azure-functions-cli/func /usr/bin/func \
-  && ln -sf /opt/azure-functions-cli/gozip /usr/bin/gozip \
-  && rm -r Azure.Functions.Cli.zip; fi
-
-
 # Setup locale to en_US.utf8
 RUN echo en_US UTF-8 >> /etc/locale.conf && locale-gen.sh
 ENV LANG="en_US.utf8"
@@ -173,10 +162,9 @@ RUN pip3 install --upgrade sfctl \
 # # BEGIN: Install Ansible in isolated Virtual Environment
 COPY ./linux/ansible/ansible*  /usr/local/bin/
 RUN chmod 755 /usr/local/bin/ansible* \
-  && pip3 install virtualenv \
   && cd /opt \
   && virtualenv -p python3 ansible \
-  && /bin/bash -c "source ansible/bin/activate && pip3 install ansible && pip3 install pywinrm\>\=0\.2\.2 && deactivate" \
+  && /bin/bash -c "source ansible/bin/activate && pip3 list --outdated --format=freeze | cut -d '=' -f1 | xargs -n1 pip3 install -U && pip3 install ansible && pip3 install pywinrm\>\=0\.2\.2 && deactivate" \
   && ansible-galaxy collection install azure.azcollection --force -p /usr/share/ansible/collections
 
 # Install latest version of Istio
@@ -205,8 +193,7 @@ ENV POWERSHELL_DISTRIBUTION_CHANNEL CloudShell
 ENV POWERSHELL_UPDATECHECK Off
 
 # Install Yeoman Generator
-RUN npm install -g yo \
-  && npm install -g npm@latest
+RUN npm install -g npm@latest
 
 # Copy and run script to Install powershell modules
 COPY ./linux/powershell/ powershell
