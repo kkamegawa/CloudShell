@@ -67,8 +67,8 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then curl -Lo bicep https://github
 
 # Temp: fix ansible modules. Proper fix is to update base layer to use regular python for Ansible.
 RUN mkdir -p /usr/share/ansible/collections/ansible_collections/azure/azcollection/ \
-    && wget -nv -q -O /usr/share/ansible/collections/ansible_collections/azure/azcollection/requirements-azure.txt https://raw.githubusercontent.com/ansible-collections/azure/dev/requirements-azure.txt \
-    && /opt/ansible/bin/python -m pip install -r /usr/share/ansible/collections/ansible_collections/azure/azcollection/requirements-azure.txt
+    && wget -nv -q -O /usr/share/ansible/collections/ansible_collections/azure/azcollection/requirements.txt https://raw.githubusercontent.com/ansible-collections/azure/dev/requirements.txt \
+    && /opt/ansible/bin/python -m pip install -r /usr/share/ansible/collections/ansible_collections/azure/azcollection/requirements.txt
 
 # Update pip
 RUN /opt/ansible/bin/python -m pip install --upgrade pip
