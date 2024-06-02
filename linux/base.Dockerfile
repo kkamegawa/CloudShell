@@ -162,8 +162,7 @@ ENV LANG="en_US.utf8"
 # update latest pip
 RUN /usr/bin/python3.9 -m pip install --upgrade pip
 
-# Update pip and Install Service Fabric CLI
-# Install mssql-scripter
+# Install Service Fabric CLI
 RUN pip3 install --upgrade sfctl \
   && pip3 install --upgrade mssql-scripter \
   && rm -rf ~/.cache/pip/
