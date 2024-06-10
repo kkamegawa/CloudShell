@@ -166,6 +166,7 @@ RUN /usr/bin/python3.9 -m pip install --upgrade pip
 # Update pip and Install Service Fabric CLI
 # Install mssql-scripter
 RUN pip3 install --upgrade sfctl \
+  && pip3 install --upgrade mssql-scripter \
   && rm -rf ~/.cache/pip/
 
 # # BEGIN: Install Ansible in isolated Virtual Environment
