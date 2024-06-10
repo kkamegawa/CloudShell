@@ -4,14 +4,15 @@
 
 # To build yourself locally, override this location with a local image tag. See README.md for more detail
 
-ARG IMAGE_LOCATION=cdpxb787066ec88f4e20ae65e42a858c42ca00.azurecr.io/official/cloudshell:base.master.14218b13.20240402.1
-
+ARG IMAGE_LOCATION=cdpxb787066ec88f4e20ae65e42a858c42ca00.azurecr.io/official/cloudshell:base.master.f360dc4c.20240510.1
 # Copy from base build
 FROM ${IMAGE_LOCATION}
 
 ARG TARGETPLATFORM
 
 # install latest azure-cli
+LABEL org.opencontainers.image.source="https://github.com/Azure/CloudShell"
+
 RUN tdnf clean all && \
     tdnf repolist --refresh && \
     ACCEPT_EULA=Y tdnf update -y && \
@@ -21,8 +22,8 @@ RUN tdnf clean all && \
 
 # Install any Azure CLI extensions that should be included by default.
 RUN az extension add --system --name ai-examples -y \
-&& az extension add --system --name ssh -y \
-&& az extension add --system --name ml -y
+    && az extension add --system --name ssh -y \
+    && az extension add --system --name ml -y
 
 # Install kubectl
 RUN az aks install-cli \

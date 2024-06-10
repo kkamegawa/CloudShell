@@ -13,6 +13,7 @@
 # ability to stay current on Linux updates.
 # https://github.com/microsoft/CBL-Mariner
 FROM mcr.microsoft.com/cbl-mariner/base/core:2.0
+LABEL org.opencontainers.image.source="https://github.com/Azure/CloudShell"
 
 ARG TARGETPLATFORM
 
@@ -165,7 +166,6 @@ RUN /usr/bin/python3.9 -m pip install --upgrade pip
 # Update pip and Install Service Fabric CLI
 # Install mssql-scripter
 RUN pip3 install --upgrade sfctl \
-  && pip3 install --upgrade mssql-scripter \
   && rm -rf ~/.cache/pip/
 
 # # BEGIN: Install Ansible in isolated Virtual Environment
