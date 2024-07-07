@@ -129,8 +129,8 @@ RUN tdnf update -y --refresh && \
   tdnf clean all && \
   rm -rf /var/cache/tdnf/*
 
-ENV NPM_CONFIG_LOGLEVEL warn
-ENV NODE_ENV production
+ENV NPM_CONFIG_LOGLEVEL=warn
+ENV NODE_ENV=production
 ENV NODE_OPTIONS=--tls-cipher-list='ECDHE-RSA-AES128-GCM-SHA256:!RC4'
 
 # Get latest version of Terraform.
@@ -173,11 +173,11 @@ RUN chmod 755 /usr/local/bin/ansible* \
   && ansible-galaxy collection install azure.azcollection --force -p /usr/share/ansible/collections
 
 # Install latest version of Istio
-ENV ISTIO_ROOT /usr/local/istio-latest
+ENV ISTIO_ROOT=/usr/local/istio-latest
 RUN curl -sSL https://git.io/getLatestIstio | sh - \
   && mv $PWD/istio* $ISTIO_ROOT \
   && chmod -R 755 $ISTIO_ROOT
-ENV PATH $PATH:$ISTIO_ROOT/bin
+ENV PATH=$PATH:$ISTIO_ROOT/bin
 
 ENV GOROOT="/usr/lib/golang"
 ENV PATH="$PATH:$GOROOT/bin:/opt/mssql-tools18/bin"

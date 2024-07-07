@@ -42,8 +42,8 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then wget -nv -O vscode.tar.gz "ht
     && rm vscode.tar.gz ; fi
 
 # Install azure-developer-cli (azd)
-ENV AZD_IN_CLOUDSHELL 1
-ENV AZD_SKIP_UPDATE_CHECK 1
+ENV AZD_IN_CLOUDSHELL=1
+ENV AZD_SKIP_UPDATE_CHECK=1
 RUN curl -fsSL https://aka.ms/install-azd.sh | bash
 
 RUN mkdir -p /usr/cloudshell
@@ -99,9 +99,9 @@ RUN ln -s /usr/bin/node /usr/bin/nodejs
 # Add user's home directories to PATH at the front so they can install tools which
 # override defaults
 # Add dotnet tools to PATH so users can install a tool using dotnet tools and can execute that command from any directory
-ENV PATH ~/.local/bin:~/bin:~/.dotnet/tools:$PATH
+ENV PATH=~/.local/bin:~/bin:~/.dotnet/tools:$PATH
 
-ENV AZURE_CLIENTS_SHOW_SECRETS_WARNING True
+ENV AZURE_CLIENTS_SHOW_SECRETS_WARNING=True
 
 # Set AZUREPS_HOST_ENVIRONMENT
-ENV AZUREPS_HOST_ENVIRONMENT cloud-shell/1.0
+ENV AZUREPS_HOST_ENVIRONMENT=cloud-shell/1.0
