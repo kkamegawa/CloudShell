@@ -28,7 +28,6 @@ aa-unconfined
 accessdb
 aclocal
 aclocal-1.16
-activate-global-python-argcomplete
 addftinfo
 addgnupghome
 addpart
@@ -187,11 +186,6 @@ compute_create
 compute_member
 compute_relabel
 consoletype
-containerd
-containerd-shim
-containerd-shim-runc-v1
-containerd-shim-runc-v2
-containerd-stress
 continue
 coproc
 coredumpctl
@@ -212,7 +206,6 @@ crond
 cronnext
 crontab
 csplit
-ctr
 ctrlaltdel
 ctstat
 curl
@@ -256,10 +249,6 @@ dltest
 dmesg
 dnsdomainname
 do
-docker
-dockerd
-docker-init
-docker-proxy
 domainname
 done
 dos2unix
@@ -383,7 +372,6 @@ fstrim
 function
 funzip
 fuser
-futurize
 g++
 gawk
 gawk-5.1.1
@@ -611,7 +599,6 @@ jobs
 join
 journalctl
 jpackage
-jp.py
 jps
 jq
 jrunscript
@@ -865,7 +852,6 @@ node
 nodejs
 nohup
 nologin
-normalizer
 npm
 nproc
 npth-config
@@ -897,7 +883,6 @@ parset
 partx
 passwd
 paste
-pasteurize
 patch
 pathchk
 pathfix3.9.py
@@ -1020,7 +1005,6 @@ python3
 python3.9
 python3.9-config
 python3-config
-python-argcomplete-check-easy-install-script
 racc
 rake
 ranlib
@@ -1045,7 +1029,6 @@ redis-cli
 redis-sentinel
 redis-server
 refer
-register-python-argcomplete
 reindexdb
 rename
 renice
@@ -1091,7 +1074,6 @@ rtmon
 rtpr
 rtstat
 ruby
-runc
 runcon
 runlevel
 run-parts
@@ -1135,7 +1117,6 @@ setpriv
 setsid
 setterm
 sexp-conv
-sfctl
 sfdisk
 sftp
 sg
@@ -1243,7 +1224,6 @@ systemd-tmpfiles
 systemd-tty-ask-password-agent
 systemd-umount
 tabs
-tabulate
 tac
 tail
 tapestat
@@ -1266,7 +1246,6 @@ time
 timedatectl
 timeout
 times
-tini-static
 tipc
 tload
 tmux
@@ -1275,7 +1254,6 @@ togglesebool
 top
 touch
 tput
-tqdm
 tr
 tracepath
 tracepath6

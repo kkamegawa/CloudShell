@@ -66,8 +66,6 @@ RUN tdnf update -y --refresh && \
   openssl-libs \
   openssl-devel \
   man-db \
-  moby-cli \
-  moby-engine \
   mysql \
   nano \
   net-tools \
@@ -160,13 +158,8 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then TF_VERSION=$(curl -s https://
 RUN echo en_US UTF-8 >> /etc/locale.conf && locale-gen.sh
 ENV LANG="en_US.utf8"
 
-# update latest pip
-RUN /usr/bin/python3.9 -m pip install --upgrade pip
-
-# Update pip and Install Service Fabric CLI
-# Install mssql-scripter
+# Install Service Fabric CLI
 RUN pip3 install --upgrade sfctl \
-  && pip3 install --upgrade mssql-scripter \
   && rm -rf ~/.cache/pip/
 
 # # BEGIN: Install Ansible in isolated Virtual Environment
@@ -199,15 +192,3 @@ RUN gem install bundler --no-document --clear-sources --force \
 ENV GEM_HOME=~/bundle
 ENV BUNDLE_PATH=~/bundle
 ENV PATH=$PATH:$GEM_HOME/bin:$BUNDLE_PATH/gems/bin
-
-# PowerShell telemetry
-ENV POWERSHELL_DISTRIBUTION_CHANNEL CloudShell
-# don't tell users to upgrade, they can't
-ENV POWERSHELL_UPDATECHECK Off
-
-# Install Yeoman Generator
-RUN npm install -g npm@latest
-
-# Copy and run script to Install powershell modules
-COPY ./linux/powershell/ powershell
-RUN /usr/bin/pwsh -File ./powershell/setupPowerShell.ps1 -image Base && rm -rf ./powershell

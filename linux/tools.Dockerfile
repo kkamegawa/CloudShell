@@ -74,13 +74,20 @@ RUN mkdir -p /usr/share/ansible/collections/ansible_collections/azure/azcollecti
 # Update pip
 RUN /opt/ansible/bin/python -m pip install --upgrade pip
 
-# Copy and run script to Install powershell modules and setup Powershell machine profile
-COPY ./linux/powershell/PSCloudShellUtility/ /usr/local/share/powershell/Modules/PSCloudShellUtility/
-COPY ./linux/powershell/ powershell
-RUN /usr/bin/pwsh -File ./powershell/setupPowerShell.ps1 -image Top && rm -rf ./powershell
+# Powershell telemetry
+ENV POWERSHELL_DISTRIBUTION_CHANNEL=CloudShell \
+    # don't tell users to upgrade, they can't
+    POWERSHELL_UPDATECHECK=Off
 
-# install powershell warmup script
-COPY ./linux/powershell/Invoke-PreparePowerShell.ps1 linux/powershell/Invoke-PreparePowerShell.ps1
+# Copy and run script to Install powershell modules and setup Powershell machine profile
+COPY ./linux/powershell/ powershell
+RUN /usr/bin/pwsh -File ./powershell/setupPowerShell.ps1 -image Base && \
+    cp -r ./powershell/PSCloudShellUtility /usr/local/share/powershell/Modules/PSCloudShellUtility/ && \
+    /usr/bin/pwsh -File ./powershell/setupPowerShell.ps1 -image Top && \
+    # Install Powershell warmup script
+    mkdir -p linux/powershell && \
+    cp powershell/Invoke-PreparePowerShell.ps1 linux/powershell/Invoke-PreparePowerShell.ps1 && \
+    rm -rf ./powershell
 
 # Remove su so users don't have su access by default.
 RUN rm -f ./linux/Dockerfile && rm -f /bin/su
