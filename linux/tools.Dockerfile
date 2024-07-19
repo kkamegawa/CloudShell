@@ -11,6 +11,8 @@ FROM ${IMAGE_LOCATION}
 ARG TARGETPLATFORM
 
 # install latest azure-cli
+LABEL org.opencontainers.image.source="https://github.com/kkamegawa/CloudShell"
+
 RUN tdnf clean all && \
     tdnf repolist --refresh && \
     ACCEPT_EULA=Y tdnf update -y && \
@@ -40,8 +42,8 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then wget -nv -O vscode.tar.gz "ht
     && rm vscode.tar.gz ; fi
 
 # Install azure-developer-cli (azd)
-ENV AZD_IN_CLOUDSHELL 1
-ENV AZD_SKIP_UPDATE_CHECK 1
+ENV AZD_IN_CLOUDSHELL=1
+ENV AZD_SKIP_UPDATE_CHECK=1
 RUN curl -fsSL https://aka.ms/install-azd.sh | bash
 
 RUN mkdir -p /usr/cloudshell
@@ -72,16 +74,12 @@ RUN mkdir -p /usr/share/ansible/collections/ansible_collections/azure/azcollecti
 # Update pip
 RUN /opt/ansible/bin/python -m pip install --upgrade pip
 
-# Copy and run script to Install powershell modules and setup Powershell machine profile
-COPY ./linux/powershell/PSCloudShellUtility/ /usr/local/share/powershell/Modules/PSCloudShellUtility/
-COPY ./linux/powershell/ powershell
-RUN /usr/bin/pwsh -File ./powershell/setupPowerShell.ps1 -image Top && rm -rf ./powershell
 # Powershell telemetry
 ENV POWERSHELL_DISTRIBUTION_CHANNEL=CloudShell \
     # don't tell users to upgrade, they can't
     POWERSHELL_UPDATECHECK=Off
 
-# Copy and run script to install Powershell modules and setup Powershell machine profile
+# Copy and run script to Install powershell modules and setup Powershell machine profile
 COPY ./linux/powershell/ powershell
 RUN /usr/bin/pwsh -File ./powershell/setupPowerShell.ps1 -image Base && \
     cp -r ./powershell/PSCloudShellUtility /usr/local/share/powershell/Modules/PSCloudShellUtility/ && \
@@ -97,13 +95,14 @@ RUN rm -f ./linux/Dockerfile && rm -f /bin/su
 #Add soft links
 RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN ln -s /usr/bin/node /usr/bin/nodejs
+RUN /usr/bin/python -m pip install --upgrade pip
 
 # Add user's home directories to PATH at the front so they can install tools which
 # override defaults
 # Add dotnet tools to PATH so users can install a tool using dotnet tools and can execute that command from any directory
-ENV PATH ~/.local/bin:~/bin:~/.dotnet/tools:$PATH
+ENV PATH=~/.local/bin:~/bin:~/.dotnet/tools:$PATH
 
-ENV AZURE_CLIENTS_SHOW_SECRETS_WARNING True
+ENV AZURE_CLIENTS_SHOW_SECRETS_WARNING=True
 
 # Set AZUREPS_HOST_ENVIRONMENT
-ENV AZUREPS_HOST_ENVIRONMENT cloud-shell/1.0
+ENV AZUREPS_HOST_ENVIRONMENT=cloud-shell/1.0
