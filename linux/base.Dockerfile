@@ -66,9 +66,6 @@ RUN tdnf update -y --refresh && \
   openssl-libs \
   openssl-devel \
   man-db \
-  moby-cli \
-  moby-engine \
-  mysql \
   nano \
   net-tools \
   parallel \
@@ -163,10 +160,6 @@ ENV LANG="en_US.utf8"
 # update latest pip
 RUN /usr/bin/python3.9 -m pip install --upgrade pip
 
-# Install Service Fabric CLI
-RUN pip3 install --upgrade sfctl \
-  && rm -rf ~/.cache/pip/
-
 # # BEGIN: Install Ansible in isolated Virtual Environment
 COPY ./linux/ansible/ansible*  /usr/local/bin/
 RUN chmod 755 /usr/local/bin/ansible* \
@@ -199,9 +192,9 @@ ENV BUNDLE_PATH=~/bundle
 ENV PATH=$PATH:$GEM_HOME/bin:$BUNDLE_PATH/gems/bin
 
 # PowerShell telemetry
-ENV POWERSHELL_DISTRIBUTION_CHANNEL CloudShell
+ENV POWERSHELL_DISTRIBUTION_CHANNEL=CloudShell
 # don't tell users to upgrade, they can't
-ENV POWERSHELL_UPDATECHECK Off
+ENV POWERSHELL_UPDATECHECK=Off
 
 # Install Yeoman Generator
 RUN npm install -g npm@latest
