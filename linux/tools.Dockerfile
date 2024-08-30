@@ -4,7 +4,7 @@
 
 # To build yourself locally, override this location with a local image tag. See README.md for more detail
 
-ARG IMAGE_LOCATION=cdpxb787066ec88f4e20ae65e42a858c42ca00.azurecr.io/official/cloudshell:base.master.b4925a0c.20240813.1
+ARG IMAGE_LOCATION=cdpxb787066ec88f4e20ae65e42a858c42ca00.azurecr.io/official/cloudshell:base.master.11e65d27.20240822.1
 # Copy from base build
 FROM ${IMAGE_LOCATION}
 
@@ -48,9 +48,6 @@ RUN curl -fsSL https://aka.ms/install-azd.sh | bash
 
 RUN mkdir -p /usr/cloudshell
 WORKDIR /usr/cloudshell
-
-# Install Office 365 CLI templates
-RUN npm install -q -g @pnp/cli-microsoft365
 
 # Install Azure Static Web Apps CLI
 RUN npm install -g @azure/static-web-apps-cli
