@@ -212,7 +212,8 @@ RUN wget -nv -O vscode.tar.gz "https://code.visualstudio.com/sha/download?build=
 # Install azure-developer-cli (azd)
 ENV AZD_IN_CLOUDSHELL=1 \
   AZD_SKIP_UPDATE_CHECK=1
-RUN curl -fsSL https://aka.ms/install-azd.sh | bash && \
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+  curl -fsSL https://aka.ms/install-azd.sh | bash && \
   #
   # Install Office 365 CLI templates
   #
@@ -228,4 +229,23 @@ RUN curl -fsSL https://aka.ms/install-azd.sh | bash && \
   # Add soft links
   #
   ln -s /usr/bin/python3 /usr/bin/python && \
-  ln -s /usr/bin/node /usr/bin/nodejs
+  ln -s /usr/bin/node /usr/bin/nodejs; fi
+
+RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+  curl -fsSL https://aka.ms/install-azd.sh | bash && \
+  #
+  # Install Office 365 CLI templates
+  #
+  npm install -q -g @pnp/cli-microsoft365 && \
+  #
+  # Install Bicep CLI
+  #
+  curl -Lo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-linux-arm64 \
+  && chmod +x ./bicep \
+  && mv ./bicep /usr/local/bin/bicep \
+  && bicep --help && \
+  #
+  # Add soft links
+  #
+  ln -s /usr/bin/python3 /usr/bin/python && \
+  ln -s /usr/bin/node /usr/bin/nodejs; fi
