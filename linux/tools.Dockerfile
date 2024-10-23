@@ -33,6 +33,28 @@ RUN az aks install-cli \
 RUN mkdir -p /usr/cloudshell
 WORKDIR /usr/cloudshell
 
+# Install Azure Static Web Apps CLI
+RUN npm install -g @azure/static-web-apps-cli
+
+# Install Bicep CLI
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then curl -Lo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-linux-x64 \
+  && chmod +x ./bicep \
+  && mv ./bicep /usr/local/bin/bicep \
+  && bicep --help; fi
+
+RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then curl -Lo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-linux-arm64 \
+  && chmod +x ./bicep \
+  && mv ./bicep /usr/local/bin/bicep \
+  && bicep --help; fi
+
+# Temp: fix ansible modules. Proper fix is to update base layer to use regular python for Ansible.
+RUN mkdir -p /usr/share/ansible/collections/ansible_collections/azure/azcollection/ \
+    && wget -nv -q -O /usr/share/ansible/collections/ansible_collections/azure/azcollection/requirements.txt https://raw.githubusercontent.com/ansible-collections/azure/dev/requirements.txt \
+    && /opt/ansible/bin/python -m pip install -r /usr/share/ansible/collections/ansible_collections/azure/azcollection/requirements.txt
+
+# Update pip
+RUN /opt/ansible/bin/python -m pip install --upgrade pip
+
 # Powershell telemetry
 ENV POWERSHELL_DISTRIBUTION_CHANNEL=CloudShell \
     # don't tell users to upgrade, they can't
@@ -54,6 +76,8 @@ RUN rm -f ./linux/Dockerfile && rm -f /bin/su
 RUN npm install -g @azure/static-web-apps-cli
 
 RUN /opt/ansible/bin/python -m pip install --upgrade pip
+#Add soft links
+RUN /usr/bin/python -m pip install --upgrade pip
 
 # Add user's home directories to PATH at the front so they can install tools which
 # override defaults
