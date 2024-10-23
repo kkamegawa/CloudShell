@@ -26,8 +26,13 @@ jobs:
       uses: docker/login-action@v3
       with:
         registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        username: ${{ github.repository_owner}}
+        password: ${{ secrets.GHCR_BUILD_PUSH_TOKEN }}
+
+    - name: Generate Tag
+      id: tag
+      run: |
+        echo "image_tag=${{ github.sha }}-$(date '+%Y-%m-%d-%H-%M-%S')" >> $GITHUB_OUTPUT
 
     - name: Base image
       uses: docker/build-push-action@v6
@@ -35,7 +40,7 @@ jobs:
         context: .
         file: linux/base.Dockerfile
         push: true
-        tags: ghcr.io/kkamegawa/cloudshell/base:${{ github.sha }},ghcr.io/kkamegawa/cloudshell/base:latest
+        tags: ghcr.io/kkamegawa/cloudshell/base:${{ steps.tag.outputs.image_tag }},ghcr.io/kkamegawa/cloudshell/base:latest
         platforms: linux/amd64,linux/arm64
 
     - name: Tools image
@@ -44,6 +49,6 @@ jobs:
         context: .
         file: linux/tools.Dockerfile
         push: true
-        tags: ghcr.io/kkamegawa/cloudshell/:${{ github.sha }},ghcr.io/kkamegawa/cloudshell:latest
-        build-args: IMAGE_LOCATION=ghcr.io/cloudshell/base:${{ github.sha }}
+        tags: ghcr.io/kkamegawa/cloudshell/:${{ steps.tag.outputs.image_tag }},ghcr.io/kkamegawa/cloudshell:latest
+        build-args: IMAGE_LOCATION=ghcr.io/cloudshell/base:${{ steps.tag.outputs.image_tag  }}
         platforms: linux/amd64,linux/arm64
