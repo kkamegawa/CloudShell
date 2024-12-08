@@ -218,22 +218,19 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then wget -nv -O vscode.tar.gz --u
 ENV AZD_IN_CLOUDSHELL=1 \
   AZD_SKIP_UPDATE_CHECK=1
 
-#
-# Install Bicep CLI
-#
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
   #
   # Install Bicep CLI
   #
-  curl -Lo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-linux-x64 \
-  && chmod +x ./bicep \
-  && mv ./bicep /usr/local/bin/bicep \
-  && bicep --help && \
+  curl -Lo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-linux-x64 && \
+  chmod +x ./bicep && \
+  mv ./bicep /usr/local/bin/bicep && \
+  bicep --help && \
   #
   # Add soft links
   #
   ln -s /usr/bin/python3 /usr/bin/python && \
-  ln -s /usr/bin/node /usr/bin/nodejs; && \
+  ln -s /usr/bin/node /usr/bin/nodejs && \
   #
   # Install rootless kit
   TMP_DIR=$(mktemp -d) && \
@@ -245,8 +242,8 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
   tar -xf rootlesskit-x86_64.tar.gz && \
   cp rootlesskit rootlesskit-docker-proxy /usr/bin/ && \
   popd && \
-  rm -rf $TMP_DIR; fi
-
+  rm -rf $TMP_DIR; \
+fi
 
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
   #
