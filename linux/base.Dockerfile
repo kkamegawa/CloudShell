@@ -203,28 +203,25 @@ ENV GEM_HOME=~/bundle
 ENV BUNDLE_PATH=~/bundle
 ENV PATH=$PATH:$GEM_HOME/bin:$BUNDLE_PATH/gems/bin
 
-# PowerShell telemetry
-ENV POWERSHELL_DISTRIBUTION_CHANNEL=CloudShell
-# don't tell users to upgrade, they can't
-ENV POWERSHELL_UPDATECHECK=Off
-
-# Install Yeoman Generator
-RUN npm install -g npm@latest
 # Install vscode
-RUN wget -nv -O vscode.tar.gz --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0" "https://code.visualstudio.com/sha/download?build=insider&os=cli-alpine-x64" \
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then wget -nv -O vscode.tar.gz --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0" "https://code.visualstudio.com/sha/download?build=insider&os=cli-alpine-x64" \
   && tar -xvzf vscode.tar.gz \
   && mv ./code-insiders /bin/vscode \
-  && rm vscode.tar.gz
+  && rm vscode.tar.gz ; fi
+
+RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then wget -nv -O vscode.tar.gz --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0" "https://code.visualstudio.com/sha/download?build=insider&os=cli-alpine-arm64" \
+  && tar -xvzf vscode.tar.gz \
+  && mv ./code-insiders /bin/vscode \
+  && rm vscode.tar.gz ; fi  
 
 # Install azure-developer-cli (azd)
 ENV AZD_IN_CLOUDSHELL=1 \
   AZD_SKIP_UPDATE_CHECK=1
+
+#
+# Install Bicep CLI
+#
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-  curl -fsSL https://aka.ms/install-azd.sh | bash && \
-  #
-  # Install Office 365 CLI templates
-  #
-  npm install -q -g @pnp/cli-microsoft365 && \
   #
   # Install Bicep CLI
   #
@@ -250,12 +247,8 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
   popd && \
   rm -rf $TMP_DIR; fi
 
+
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
-  curl -fsSL https://aka.ms/install-azd.sh | bash && \
-  #
-  # Install Office 365 CLI templates
-  #
-  npm install -q -g @pnp/cli-microsoft365 && \
   #
   # Install Bicep CLI
   #
@@ -268,6 +261,18 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
   #
   ln -s /usr/bin/python3 /usr/bin/python && \
   ln -s /usr/bin/node /usr/bin/nodejs; && \
+  #
+  curl -fsSL https://aka.ms/install-azd.sh | bash && \
+  #
+  # Install Office 365 CLI templates
+  #
+  npm install -q -g @pnp/cli-microsoft365 && \
+  #
+  # Add soft links
+  #
+  ln -s /usr/bin/python3 /usr/bin/python && \
+  ln -s /usr/bin/node /usr/bin/nodejs; && \
+  RUN npm install -g npm@latest && \
   # Install rootless kit
   TMP_DIR=$(mktemp -d) && \
   pushd $TMP_DIR && \

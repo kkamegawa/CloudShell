@@ -49,6 +49,6 @@ jobs:
         context: .
         file: linux/tools.Dockerfile
         push: true
-        tags: ghcr.io/kkamegawa/cloudshell/tools:${{ steps.tag.outputs.image_tag }},ghcr.io/kkamegawa/cloudshell/tools:latest
-        build-args: IMAGE_LOCATION=ghcr.io/kkamegawa/cloudshell/base:${{ steps.tag.outputs.image_tag }}
+        tags: ghcr.io/kkamegawa/cloudshell/:${{ steps.tag.outputs.image_tag }},ghcr.io/kkamegawa/cloudshell:latest
+        build-args: IMAGE_LOCATION=ghcr.io/cloudshell/base:${{ steps.tag.outputs.image_tag  }}
         platforms: linux/amd64,linux/arm64
