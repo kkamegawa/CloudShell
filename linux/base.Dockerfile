@@ -227,10 +227,17 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
   mv ./bicep /usr/local/bin/bicep && \
   bicep --help && \
   #
+  curl -fsSL https://aka.ms/install-azd.sh | bash && \
+  #
+  # Install Office 365 CLI templates
+  #
+  npm install -q -g @pnp/cli-microsoft365 && \
+  #
   # Add soft links
   #
   ln -s /usr/bin/python3 /usr/bin/python && \
   ln -s /usr/bin/node /usr/bin/nodejs && \
+  RUN npm install -g npm@latest && \
   #
   # Install rootless kit
   TMP_DIR=$(mktemp -d) && \
@@ -258,6 +265,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
   #
   ln -s /usr/bin/python3 /usr/bin/python && \
   ln -s /usr/bin/node /usr/bin/nodejs; && \
+  RUN npm install -g npm@latest && \
   #
   curl -fsSL https://aka.ms/install-azd.sh | bash && \
   #
@@ -269,7 +277,6 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
   #
   ln -s /usr/bin/python3 /usr/bin/python && \
   ln -s /usr/bin/node /usr/bin/nodejs; && \
-  RUN npm install -g npm@latest && \
   # Install rootless kit
   TMP_DIR=$(mktemp -d) && \
   pushd $TMP_DIR && \
