@@ -100,7 +100,6 @@ RUN tdnf update -y --refresh && \
   golang \
   ruby \
   rubygems \
-  packer \
   dcos-cli \
   ripgrep \
   helm \
@@ -124,9 +123,17 @@ RUN tdnf update -y --refresh && \
   gh \
   redis \
   cpio \
+  moby-engine \
+  moby-cli \
+  moby-containerd \
+  moby-runc \
+  moby-buildx \
+  fuse-overlayfs \
+  slirp4netns \
   gettext && \
   tdnf clean all && \
-  rm -rf /var/cache/tdnf/*
+  rm -rf /var/cache/tdnf/* && \
+  rm /var/opt/apache-maven/lib/guava-25.1-android.jar
 
 ENV NPM_CONFIG_LOGLEVEL=warn
 ENV NODE_ENV=production
@@ -154,7 +161,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then TF_VERSION=$(curl -s https://
   && unset TF_VERSION; fi
 
 # Setup locale to en_US.utf8
-RUN echo en_US UTF-8 >> /etc/locale.conf && locale-gen.sh
+RUN echo 'LANG=en_US.UTF-8' >> /etc/locale.conf && locale-gen.sh
 ENV LANG="en_US.utf8"
 
 # update latest pip
@@ -204,7 +211,7 @@ ENV POWERSHELL_UPDATECHECK=Off
 # Install Yeoman Generator
 RUN npm install -g npm@latest
 # Install vscode
-RUN wget -nv -O vscode.tar.gz "https://code.visualstudio.com/sha/download?build=insider&os=cli-alpine-x64" \
+RUN wget -nv -O vscode.tar.gz --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0" "https://code.visualstudio.com/sha/download?build=insider&os=cli-alpine-x64" \
   && tar -xvzf vscode.tar.gz \
   && mv ./code-insiders /bin/vscode \
   && rm vscode.tar.gz
@@ -229,7 +236,19 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
   # Add soft links
   #
   ln -s /usr/bin/python3 /usr/bin/python && \
-  ln -s /usr/bin/node /usr/bin/nodejs; fi
+  ln -s /usr/bin/node /usr/bin/nodejs; && \
+  #
+  # Install rootless kit
+  TMP_DIR=$(mktemp -d) && \
+  pushd $TMP_DIR && \
+  ROOTLESSKIT_VERSION=$(curl https://api.github.com/repos/rootless-containers/rootlesskit/releases/latest | jq -r '.tag_name') && \
+  curl -LO https://github.com/rootless-containers/rootlesskit/releases/download/${ROOTLESSKIT_VERSION}/rootlesskit-x86_64.tar.gz && \
+  curl -LO https://github.com/rootless-containers/rootlesskit/releases/download/${ROOTLESSKIT_VERSION}/SHA256SUMS && \
+  sha256sum -c SHA256SUMS --ignore-missing && \
+  tar -xf rootlesskit-x86_64.tar.gz && \
+  cp rootlesskit rootlesskit-docker-proxy /usr/bin/ && \
+  popd && \
+  rm -rf $TMP_DIR; fi
 
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
   curl -fsSL https://aka.ms/install-azd.sh | bash && \
@@ -248,4 +267,15 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
   # Add soft links
   #
   ln -s /usr/bin/python3 /usr/bin/python && \
-  ln -s /usr/bin/node /usr/bin/nodejs; fi
+  ln -s /usr/bin/node /usr/bin/nodejs; && \
+  # Install rootless kit
+  TMP_DIR=$(mktemp -d) && \
+  pushd $TMP_DIR && \
+  ROOTLESSKIT_VERSION=$(curl https://api.github.com/repos/rootless-containers/rootlesskit/releases/latest | jq -r '.tag_name') && \
+  curl -LO https://github.com/rootless-containers/rootlesskit/releases/download/${ROOTLESSKIT_VERSION}/rootlesskit-aarch64.tar.gz && \
+  curl -LO https://github.com/rootless-containers/rootlesskit/releases/download/${ROOTLESSKIT_VERSION}/SHA256SUMS && \
+  sha256sum -c SHA256SUMS --ignore-missing && \
+  tar -xf rootlesskit-aarch64.tar.gz && \
+  cp rootlesskit rootlesskit-docker-proxy /usr/bin/ && \
+  popd && \
+  rm -rf $TMP_DIR; fi
