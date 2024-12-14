@@ -130,7 +130,9 @@ RUN tdnf update -y --refresh && \
   moby-buildx \
   fuse-overlayfs \
   slirp4netns \
-  gettext && \
+  gettext \
+  util-linux \
+  bash && \
   tdnf clean all && \
   rm -rf /var/cache/tdnf/* && \
   rm /var/opt/apache-maven/lib/guava-25.1-android.jar
@@ -163,9 +165,6 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then TF_VERSION=$(curl -s https://
 # Setup locale to en_US.utf8
 RUN echo 'LANG=en_US.UTF-8' >> /etc/locale.conf && locale-gen.sh
 ENV LANG="en_US.utf8"
-
-# update latest pip
-RUN /usr/bin/python3.9 -m pip install --upgrade pip
 
 # # BEGIN: Install Ansible in isolated Virtual Environment
 COPY ./linux/ansible/ansible*  /usr/local/bin/
@@ -237,7 +236,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
   #
   ln -s /usr/bin/python3 /usr/bin/python && \
   ln -s /usr/bin/node /usr/bin/nodejs && \
-  RUN npm install -g npm@latest && \
+  npm install -g npm@latest && \
   #
   # Install rootless kit
   TMP_DIR=$(mktemp -d) && \
@@ -249,8 +248,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
   tar -xf rootlesskit-x86_64.tar.gz && \
   cp rootlesskit rootlesskit-docker-proxy /usr/bin/ && \
   popd && \
-  rm -rf $TMP_DIR; \
-fi
+  rm -rf $TMP_DIR; fi
 
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
   #
@@ -264,8 +262,8 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
   # Add soft links
   #
   ln -s /usr/bin/python3 /usr/bin/python && \
-  ln -s /usr/bin/node /usr/bin/nodejs; && \
-  RUN npm install -g npm@latest && \
+  ln -s /usr/bin/node /usr/bin/nodejs && \
+  npm install -g npm@latest && \
   #
   curl -fsSL https://aka.ms/install-azd.sh | bash && \
   #
@@ -276,12 +274,12 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
   # Add soft links
   #
   ln -s /usr/bin/python3 /usr/bin/python && \
-  ln -s /usr/bin/node /usr/bin/nodejs; && \
+  ln -s /usr/bin/node /usr/bin/nodejs && \
   # Install rootless kit
   TMP_DIR=$(mktemp -d) && \
   pushd $TMP_DIR && \
   ROOTLESSKIT_VERSION=$(curl https://api.github.com/repos/rootless-containers/rootlesskit/releases/latest | jq -r '.tag_name') && \
-  curl -LO https://github.com/rootless-containers/rootlesskit/releases/download/${ROOTLESSKIT_VERSION}/rootlesskit-aarch64.tar.gz && \
+  curl -LO https://github.com/rootless-containers/rootlesskit/releases/download/${ROOTLESSKIT_VERSION}/rootlesskit-aarch64.tar.gz  && \
   curl -LO https://github.com/rootless-containers/rootlesskit/releases/download/${ROOTLESSKIT_VERSION}/SHA256SUMS && \
   sha256sum -c SHA256SUMS --ignore-missing && \
   tar -xf rootlesskit-aarch64.tar.gz && \
