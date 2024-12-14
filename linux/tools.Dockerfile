@@ -33,6 +33,9 @@ RUN az aks install-cli \
 RUN mkdir -p /usr/cloudshell
 WORKDIR /usr/cloudshell
 
+# Install Azure Static Web Apps CLI
+RUN npm install -g @azure/static-web-apps-cli
+
 # Powershell telemetry
 ENV POWERSHELL_DISTRIBUTION_CHANNEL=CloudShell \
     # don't tell users to upgrade, they can't
