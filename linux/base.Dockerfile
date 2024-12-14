@@ -270,11 +270,6 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
   # Install Office 365 CLI templates
   #
   npm install -q -g @pnp/cli-microsoft365 && \
-  #
-  # Add soft links
-  #
-  ln -s /usr/bin/python3 /usr/bin/python && \
-  ln -s /usr/bin/node /usr/bin/nodejs && \
   # Install rootless kit
   TMP_DIR=$(mktemp -d) && \
   pushd $TMP_DIR && \
