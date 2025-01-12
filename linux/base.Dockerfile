@@ -22,10 +22,10 @@ COPY linux/tdnfinstall.sh .
 
 RUN tdnf update -y --refresh && \
   bash ./tdnfinstall.sh \
-  mariner-repos-extended && \
+  azurelinux-repos-extended && \
   tdnf repolist --refresh && \
   bash ./tdnfinstall.sh \
-  nodejs20 \
+  nodejs \
   xz \
   git \
   gpgme \
@@ -54,7 +54,7 @@ RUN tdnf update -y --refresh && \
   initscripts \
   iptables \
   iputils \
-  msopenjdk-17 \
+  msopenjdk-21 \
   jq \
   less \
   libffi \
@@ -94,7 +94,7 @@ RUN tdnf update -y --refresh && \
   which \
   zip \
   zsh \
-  maven3 \
+  maven \
   jx \
   cf-cli \
   golang \
