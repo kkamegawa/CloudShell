@@ -12,7 +12,7 @@
 # CBL-Mariner is designed to provide a consistent platform for these devices and services and will enhance Microsoft’s
 # ability to stay current on Linux updates.
 # https://github.com/microsoft/CBL-Mariner
-FROM mcr.microsoft.com/cbl-mariner/base/core:2.0
+FROM mcr.microsoft.com/azurelinux/base/core:3.0
 LABEL org.opencontainers.image.source="https://github.com/Azure/CloudShell"
 
 ARG TARGETPLATFORM
@@ -25,7 +25,7 @@ RUN tdnf update -y --refresh && \
   mariner-repos-extended && \
   tdnf repolist --refresh && \
   bash ./tdnfinstall.sh \
-  nodejs18 \
+  nodejs20 \
   xz \
   git \
   gpgme \
@@ -42,8 +42,8 @@ RUN tdnf update -y --refresh && \
   curl \
   bind-utils \
   dos2unix \
-  dotnet-runtime-8.0 \
-  dotnet-sdk-8.0 \
+  dotnet-runtime-9.0 \
+  dotnet-sdk-9.0 \
   e2fsprogs \
   emacs \
   gawk \
@@ -236,7 +236,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
   #
   ln -s /usr/bin/python3 /usr/bin/python && \
   ln -s /usr/bin/node /usr/bin/nodejs && \
-  npm install -g npm@10 && \
+  npm install -g npm@latest && \
   #
   # Install rootless kit
   TMP_DIR=$(mktemp -d) && \
@@ -263,7 +263,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
   #
   ln -s /usr/bin/python3 /usr/bin/python && \
   ln -s /usr/bin/node /usr/bin/nodejs && \
-  npm install -g npm@10 && \
+  npm install -g npm@latest && \
   #
   curl -fsSL https://aka.ms/install-azd.sh | bash && \
   #
