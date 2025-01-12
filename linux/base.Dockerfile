@@ -236,7 +236,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
   #
   ln -s /usr/bin/python3 /usr/bin/python && \
   ln -s /usr/bin/node /usr/bin/nodejs && \
-  npm install -g npm@latest && \
+  npm install -g npm@10 && \
   #
   # Install rootless kit
   TMP_DIR=$(mktemp -d) && \
@@ -263,7 +263,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
   #
   ln -s /usr/bin/python3 /usr/bin/python && \
   ln -s /usr/bin/node /usr/bin/nodejs && \
-  npm install -g npm@latest && \
+  npm install -g npm@10 && \
   #
   curl -fsSL https://aka.ms/install-azd.sh | bash && \
   #
