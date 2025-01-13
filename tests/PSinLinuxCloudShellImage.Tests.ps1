@@ -8,11 +8,11 @@ Describe "Various programs installed with expected versions" {
         }
     }
 
-    It "Base OS - CBL-Mariner 2.0" {
+    It "Base OS - AzureLinux 3.0" {
 
         [System.Environment]::OSVersion.Platform | Should -Be 'Unix'
         $osDetails = Get-Content /etc/*release
-        $osDetails | Where-Object {$_.Contains('VERSION_ID="2.0"')} | Should -Not -BeNullOrEmpty
+        $osDetails | Where-Object {$_.Contains('VERSION_ID="3.0"')} | Should -Not -BeNullOrEmpty
         $osDetails | Where-Object {$_.Contains('NAME="Common Base Linux Mariner"')} | Should -Not -BeNullOrEmpty
     }
 
