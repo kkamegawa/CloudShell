@@ -119,7 +119,6 @@ RUN tdnf update -y --refresh && \
   screen \
   postgresql-devel \
   gh \
-  redis \
   cpio \
   moby-engine \
   moby-cli \
