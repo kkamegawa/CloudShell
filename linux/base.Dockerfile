@@ -104,8 +104,6 @@ RUN tdnf update -y --refresh && \
   ripgrep \
   helm \
   azcopy \
-  apparmor-parser \
-  apparmor-utils \
   cronie \
   ebtables-legacy \
   fakeroot \

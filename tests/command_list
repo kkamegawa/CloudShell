@@ -49,8 +49,6 @@ ansible-playbook
 ansible-pull
 ansible-test
 ansible-vault
-apparmor_parser
-apparmor_status
 applygnupgdefaults
 apr-1-config
 apropos
