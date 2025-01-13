@@ -131,8 +131,7 @@ RUN tdnf update -y --refresh && \
   util-linux \
   bash && \
   tdnf clean all && \
-  rm -rf /var/cache/tdnf/* && \
-  rm /var/opt/apache-maven/lib/guava-25.1-android.jar
+  rm -rf /var/cache/tdnf/* 
 
 ENV NPM_CONFIG_LOGLEVEL=warn
 ENV NODE_ENV=production
