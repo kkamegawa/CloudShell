@@ -22,7 +22,7 @@ on:
 jobs:
   Arm64_build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest-arm64
+    runs-on: ubuntu-22.04-arm
     # Steps represent a sequence of tasks that will be executed
     steps:
       - name: Maximize build space
@@ -41,7 +41,7 @@ jobs:
 
       # Build base dockerfile
       - name: Build the base.Dockerfile
-        run: docker build -t base_cloudshell --platform linux/arm4 -f linux/base.Dockerfile .
+        run: docker build -t base_cloudshell --platform linux/arm64 -f linux/base.Dockerfile .
 
       - name: Create temporary trivy directories
         run: |
