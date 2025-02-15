@@ -167,7 +167,7 @@ COPY ./linux/ansible/ansible*  /usr/local/bin/
 RUN chmod 755 /usr/local/bin/ansible* \
   && cd /opt \
   && virtualenv -p python3 ansible \
-  && /bin/bash -c "source ansible/bin/activate && pip3 list --outdated --format=freeze | cut -d '=' -f1 | xargs -n1 pip3 install -U && pip3 install ansible && pip3 install pywinrm\>\=0\.2\.2 && deactivate" \
+  && /bin/bash -c "source ansible/bin/activate && pip3 list --outdated --format=json | jq -r '.[] | .name+\"=\"+.latest_version' | xargs -n1 pip3 install -U && pip3 install ansible && pip3 install pywinrm\>\=0\.2\.2 && deactivate" \
   && rm -rf ~/.local/share/virtualenv/ \
   && rm -rf ~/.cache/pip/ \
   && ansible-galaxy collection install azure.azcollection --force -p /usr/share/ansible/collections \
