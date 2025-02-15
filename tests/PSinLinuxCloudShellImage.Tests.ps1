@@ -203,6 +203,13 @@ Describe "PowerShell Modules" {
 
     }
 
+    It "Microsoft.Entra PowerShell Module" {
+
+        $module = Get-Module -Name 'Microsoft.Entra' -ListAvailable
+        $module | Should -Not -BeNullOrEmpty
+
+    }
+
     $importModuleTestCases = @(
         @{ ModuleName = "Microsoft.PowerShell.Management" }
         @{ ModuleName = "PSCloudShellUtility" }
@@ -214,6 +221,7 @@ Describe "PowerShell Modules" {
         @{ ModuleName = "MicrosoftTeams" }
         @{ ModuleName = "Microsoft.PowerShell.SecretManagement" }
         @{ ModuleName = "Microsoft.PowerShell.SecretStore" }
+        @{ ModuleName = "Microsoft.Entra" }
     )
 
     It "Import-Module test for <ModuleName>" -TestCases $importModuleTestCases {
