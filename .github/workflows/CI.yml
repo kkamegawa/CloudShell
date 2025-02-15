@@ -20,8 +20,81 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
+  Arm64_build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-22.04-arm
+    # Steps represent a sequence of tasks that will be executed
+    steps:
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: '16384'
+          temp-reserve-mb: '100'
+          swap-size-mb: '8192'
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+          remove-codeql: 'true'
+
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+
+      # Build base dockerfile
+      - name: Build the base.Dockerfile
+        run: docker build -t base_cloudshell --platform linux/arm4 -f linux/base.Dockerfile .
+
+      - name: Create temporary trivy directories
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/trivy-tmp/.cache
+          echo "TMPDIR=$GITHUB_WORKSPACE/trivy-tmp" >> $GITHUB_ENV
+          echo "TRIVY_CACHE_DIR=$GITHUB_WORKSPACE/trivy-tmp/.cache" >> $GITHUB_ENV
+
+      - name: Scan base image with Trivy
+        id: trivy-base-scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'image'
+          image-ref: base_cloudshell
+          scanners: 'vuln,config'
+          severity: 'HIGH,CRITICAL'
+
+      # Build tools dockerfile
+      - name: Build the tools.Dockerfile
+        run: |
+          docker build -t tools_cloudshell --build-arg IMAGE_LOCATION=base_cloudshell --platform linux/arm64 -f linux/tools.Dockerfile .
+
+      - name: Scan Tools image with Trivy
+        id: trivy-tools-scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'image'
+          image-ref: tools_cloudshell
+          scanners: 'vuln,config'
+          severity: 'HIGH,CRITICAL'
+
+      # Run the test cases
+      - name: Run the test cases
+        run: docker run --volume $(pwd)/tests:/tests tools_cloudshell /bin/bash /tests/test.sh
+
+      # Show Docker image size
+      - name: find the pull request id
+        run: echo ISSUEID=$(echo "${{github.ref }}" | sed 's!refs/pull/\([0-9]*\)/merge!\1!') >> $GITHUB_ENV
+      - name: find the base size info
+        run: echo BASE_SIZE=$(docker inspect base_cloudshell:latest --format "{{.Size}}") >> $GITHUB_ENV
+      - name: find the tools size info
+        run: echo TOOLS_SIZE=$(docker inspect tools_cloudshell:latest --format "{{.Size}}") >> $GITHUB_ENV
+      - name: update a comment with size
+        run: |
+          echo "pull id $ISSUEID size $BASE_SIZE  $TOOLS_SIZE"  && \
+          curl --request POST \
+          --url https://api.github.com/repos/${{ github.repository }}/issues/$ISSUEID/comments \
+          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          --header 'content-type: application/json' \
+          --header 'Accept: application/vnd.github.v3+json' \
+          --data "{
+            \"body\": \"Image size with this change is base: $(($BASE_SIZE / 1048576))MB, tools: $(($TOOLS_SIZE / 1048576))MB. \"
+            }"
+  Amd64_build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -42,7 +115,7 @@ jobs:
 
       # Build base dockerfile
       - name: Build the base.Dockerfile
-        run: docker build -t base_cloudshell -f linux/base.Dockerfile .
+        run: docker build -t base_cloudshell --platform linux/amd64 -f linux/base.Dockerfile .
 
       - name: Create temporary trivy directories
         run: |
@@ -62,7 +135,7 @@ jobs:
       # Build tools dockerfile
       - name: Build the tools.Dockerfile
         run: |
-          docker build -t tools_cloudshell --build-arg IMAGE_LOCATION=base_cloudshell -f linux/tools.Dockerfile .
+          docker build -t tools_cloudshell --build-arg IMAGE_LOCATION=base_cloudshell --platform linux/amd64 -f linux/tools.Dockerfile .
 
       - name: Scan Tools image with Trivy
         id: trivy-tools-scan
