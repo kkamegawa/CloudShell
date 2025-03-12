@@ -4,7 +4,7 @@
 
 # To build yourself locally, override this location with a local image tag. See README.md for more detail
 
-ARG IMAGE_LOCATION=cdpxb787066ec88f4e20ae65e42a858c42ca00.azurecr.io/official/cloudshell:base.master.cd63aa88.20241018.1
+ARG IMAGE_LOCATION=cdpxb787066ec88f4e20ae65e42a858c42ca00.azurecr.io/official/cloudshell:base.master.019833a3.20250311.1
 # Copy from base build
 FROM ${IMAGE_LOCATION}
 
@@ -16,7 +16,11 @@ LABEL org.opencontainers.image.source="https://github.com/kkamegawa/CloudShell"
 RUN tdnf clean all && \
     tdnf repolist --refresh && \
     ACCEPT_EULA=Y tdnf update -y && \
-    tdnf install azure-cli -y && \
+    # Install latest Azure CLI package. CLI team drops latest (pre-release) package here prior to public release
+    # We don't support using this location elsewhere - it may be removed or updated without notice
+    wget https://azurecliprod.blob.core.windows.net/cloudshell-release/azure-cli-latest-azurelinux3.0.rpm \
+    && tdnf install -y ./azure-cli-latest-azurelinux3.0.rpm \
+    && rm azure-cli-latest-azurelinux3.0.rpm && \
     tdnf clean all && \
     rm -rf /var/cache/tdnf/*
 

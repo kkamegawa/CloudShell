@@ -12,7 +12,7 @@
 # CBL-Mariner is designed to provide a consistent platform for these devices and services and will enhance Microsoft’s
 # ability to stay current on Linux updates.
 # https://github.com/microsoft/CBL-Mariner
-FROM mcr.microsoft.com/cbl-mariner/base/core:2.0
+FROM mcr.microsoft.com/azurelinux/base/core:3.0
 LABEL org.opencontainers.image.source="https://github.com/Azure/CloudShell"
 
 ARG TARGETPLATFORM
@@ -22,10 +22,11 @@ COPY linux/tdnfinstall.sh .
 
 RUN tdnf update -y --refresh && \
   bash ./tdnfinstall.sh \
-  mariner-repos-extended && \
+  azurelinux-repos-extended && \
   tdnf repolist --refresh && \
   bash ./tdnfinstall.sh \
-  nodejs18 \
+  nodejs \
+  nodejs-npm \
   xz \
   git \
   gpgme \
@@ -94,7 +95,7 @@ RUN tdnf update -y --refresh && \
   which \
   zip \
   zsh \
-  maven3 \
+  maven \
   jx \
   cf-cli \
   golang \
@@ -104,8 +105,6 @@ RUN tdnf update -y --refresh && \
   ripgrep \
   helm \
   azcopy \
-  apparmor-parser \
-  apparmor-utils \
   cronie \
   ebtables-legacy \
   fakeroot \
@@ -121,7 +120,6 @@ RUN tdnf update -y --refresh && \
   screen \
   postgresql-devel \
   gh \
-  redis \
   cpio \
   moby-engine \
   moby-cli \
@@ -134,8 +132,7 @@ RUN tdnf update -y --refresh && \
   util-linux \
   bash && \
   tdnf clean all && \
-  rm -rf /var/cache/tdnf/* && \
-  rm /var/opt/apache-maven/lib/guava-25.1-android.jar
+  rm -rf /var/cache/tdnf/*
 
 ENV NPM_CONFIG_LOGLEVEL=warn
 ENV NODE_ENV=production
@@ -145,6 +142,7 @@ ENV NODE_OPTIONS=--tls-cipher-list='ECDHE-RSA-AES128-GCM-SHA256:!RC4'
 # Customers require the latest version of Terraform.
 
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then TF_VERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r -M ".current_version") \
+  && TF_VERSION="${TF_VERSION#v}" \
   && wget -nv -O terraform.zip "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip" \
   && wget -nv -O terraform.sha256 "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_SHA256SUMS" \
   && echo "$(grep "${TF_VERSION}_linux_amd64.zip" terraform.sha256 | awk '{print $1}')  terraform.zip" | sha256sum -c \
@@ -171,7 +169,7 @@ COPY ./linux/ansible/ansible*  /usr/local/bin/
 RUN chmod 755 /usr/local/bin/ansible* \
   && cd /opt \
   && virtualenv -p python3 ansible \
-  && /bin/bash -c "source ansible/bin/activate && pip3 list --outdated --format=freeze | cut -d '=' -f1 | xargs -n1 pip3 install -U && pip3 install ansible && pip3 install pywinrm\>\=0\.2\.2 && deactivate" \
+  && /bin/bash -c "source ansible/bin/activate && pip3 list --format=freeze | cut -d '=' -f1 | xargs -n1 pip3 install -U && pip3 install ansible && pip3 install pywinrm\>\=0\.2\.2 && deactivate" \
   && rm -rf ~/.local/share/virtualenv/ \
   && rm -rf ~/.cache/pip/ \
   && ansible-galaxy collection install azure.azcollection --force -p /usr/share/ansible/collections \
@@ -182,11 +180,13 @@ RUN chmod 755 /usr/local/bin/ansible* \
 
 
 # Install latest version of Istio
-ENV ISTIO_ROOT=/usr/local/istio-latest
-RUN curl -sSL https://git.io/getLatestIstio | sh - \
-  && mv $PWD/istio* $ISTIO_ROOT \
-  && chmod -R 755 $ISTIO_ROOT
-ENV PATH=$PATH:$ISTIO_ROOT/bin
+RUN export TMP_DIR=$(mktemp -d) \
+  && pushd "${TMP_DIR}"  \
+  && curl -sSL https://git.io/getLatestIstio | sh - \
+  && mv ./istio*/bin/istioctl /usr/local/bin/istioctl \
+  && chmod 755 /usr/local/bin/istioctl \
+  && popd \
+  && rm -rf "${TMP_DIR}"
 
 ENV GOROOT="/usr/lib/golang"
 ENV PATH="$PATH:$GOROOT/bin:/opt/mssql-tools18/bin"
