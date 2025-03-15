@@ -45,7 +45,10 @@ Describe "Various programs installed with expected versions" {
     }
 
     It "Compare bash commands to baseline" {
-        if($env:PROCESSOR_ARCHITECTURE -eq "ARM64") {
+        if([string]::IsNullOrEmpty($env:PROCESSOR_ARCHITECTURE) -eq $true) {
+            $architecture = uname -m
+        }
+        if($env:PROCESSOR_ARCHITECTURE -eq "ARM64" -or $architecture -eq "arm64") {
             $command_list = "compgen -c | sort -u > /tests/installed_commands_arm64 && diff -w /tests/command_list /tests/installed_commands"
         } else {
             $command_list = "compgen -c | sort -u > /tests/installed_commands && diff -w /tests/command_list /tests/installed_commands"
