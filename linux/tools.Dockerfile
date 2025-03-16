@@ -59,9 +59,6 @@ RUN cp ./powershell/libs/libmi.so /opt/microsoft/powershell/7/libmi.so && \
 # Remove su so users don't have su access by default.
 RUN rm -f ./linux/Dockerfile && rm -f /bin/su
 
-#Add soft links
-RUN /usr/bin/python -m pip install --upgrade pip
-
 # Add user's home directories to PATH at the front so they can install tools which
 # override defaults
 # Add dotnet tools to PATH so users can install a tool using dotnet tools and can execute that command from any directory
