@@ -4,7 +4,7 @@
 
 # To build yourself locally, override this location with a local image tag. See README.md for more detail
 
-ARG IMAGE_LOCATION=cdpxb787066ec88f4e20ae65e42a858c42ca00.azurecr.io/official/cloudshell:base.master.019833a3.20250311.1
+ARG IMAGE_LOCATION=cdpxb787066ec88f4e20ae65e42a858c42ca00.azurecr.io/official/cloudshell:base.master.7df1b379.20250423.1
 # Copy from base build
 FROM ${IMAGE_LOCATION}
 
@@ -33,6 +33,16 @@ RUN az extension add --system --name ai-examples -y \
 RUN az aks install-cli \
     && chmod +x /usr/local/bin/kubectl \
     && chmod +x /usr/local/bin/kubelogin
+
+# Install azure-functions-core-tools
+RUN wget -nv -O Azure.Functions.Cli.zip `curl -fSsL https://api.github.com/repos/Azure/azure-functions-core-tools/releases/latest | grep "url.*linux-x64" | grep -v "sha2" | cut -d '"' -f4` \
+    && unzip -d azure-functions-cli Azure.Functions.Cli.zip \
+    && chmod +x azure-functions-cli/func \
+    && chmod +x azure-functions-cli/gozip \
+    && mv -v azure-functions-cli /opt \
+    && ln -sf /opt/azure-functions-cli/func /usr/bin/func \
+    && ln -sf /opt/azure-functions-cli/gozip /usr/bin/gozip \
+    && rm -r Azure.Functions.Cli.zip
 
 RUN mkdir -p /usr/cloudshell
 WORKDIR /usr/cloudshell

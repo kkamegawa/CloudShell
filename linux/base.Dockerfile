@@ -22,7 +22,8 @@ COPY linux/tdnfinstall.sh .
 
 RUN tdnf update -y --refresh && \
   bash ./tdnfinstall.sh \
-  azurelinux-repos-extended && \
+  azurelinux-repos-extended \
+  azurelinux-repos-ms-non-oss-3.0 && \
   tdnf repolist --refresh && \
   bash ./tdnfinstall.sh \
   nodejs \
@@ -43,8 +44,8 @@ RUN tdnf update -y --refresh && \
   curl \
   bind-utils \
   dos2unix \
-  dotnet-runtime-8.0 \
-  dotnet-sdk-8.0 \
+  dotnet-runtime-9.0 \
+  dotnet-sdk-9.0 \
   e2fsprogs \
   emacs \
   gawk \
@@ -128,9 +129,9 @@ RUN tdnf update -y --refresh && \
   moby-buildx \
   fuse-overlayfs \
   slirp4netns \
-  gettext \
-  util-linux \
-  bash && \
+  msodbcsql18 \
+  mssql-tools18 \
+  gettext && \
   tdnf clean all && \
   rm -rf /var/cache/tdnf/*
 
@@ -189,6 +190,8 @@ RUN export TMP_DIR=$(mktemp -d) \
   && rm -rf "${TMP_DIR}"
 
 ENV GOROOT="/usr/lib/golang"
+# TODO: Move adding mssql-tools18 path addition to agent image
+# to add sqlcmd, bcp binaries for non-root users in default PATH
 ENV PATH="$PATH:$GOROOT/bin:/opt/mssql-tools18/bin"
 
 RUN gem install bundler --no-document --clear-sources --force \
