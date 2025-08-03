@@ -4,7 +4,8 @@
 
 # To build yourself locally, override this location with a local image tag. See README.md for more detail
 
-ARG IMAGE_LOCATION=cdpxb787066ec88f4e20ae65e42a858c42ca00.azurecr.io/official/cloudshell:base.master.7df1b379.20250423.1
+ARG IMAGE_LOCATION=cdpxb787066ec88f4e20ae65e42a858c42ca00.azurecr.io/official/cloudshell:base.master.3df5312c.20250612.2
+
 # Copy from base build
 FROM ${IMAGE_LOCATION}
 
@@ -12,6 +13,22 @@ ARG TARGETPLATFORM
 
 # install latest azure-cli
 LABEL org.opencontainers.image.source="https://github.com/kkamegawa/CloudShell"
+
+# Temporarily add in this code. We can remove it once we cache the base image.
+RUN tdnf update -y --refresh && \
+    bash ./tdnfinstall.sh \
+    azurelinux-repos-cloud-native \
+    azurelinux-repos-extended \
+    azurelinux-repos-ms-non-oss-3.0 && \
+    tdnf repolist --refresh && \
+    bash ./tdnfinstall.sh \
+    msodbcsql18 \
+    mssql-tools18 \
+    kubectl-gadget \
+    ig && \
+    tdnf clean all && \
+    rm -rf /var/cache/tdnf/*
+        
 
 RUN tdnf clean all && \
     tdnf repolist --refresh && \
@@ -25,8 +42,7 @@ RUN tdnf clean all && \
     rm -rf /var/cache/tdnf/*
 
 # Install any Azure CLI extensions that should be included by default.
-RUN az extension add --system --name ai-examples -y \
-    && az extension add --system --name ssh -y \
+RUN az extension add --system --name ssh -y \
     && az extension add --system --name ml -y
 
 # Install kubectl

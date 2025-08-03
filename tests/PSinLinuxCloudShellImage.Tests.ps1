@@ -40,10 +40,6 @@ Describe "Various programs installed with expected versions" {
         Test-Path $startupScriptPath | Should -Be $true
     }
 
-    It "az cli extensions" {
-        az extension list | jq '.[] | .name' | Should -Contain '"ai-examples"'
-    }
-
     It "Compare bash commands to baseline" {
         if([string]::IsNullOrEmpty($env:PROCESSOR_ARCHITECTURE) -eq $true) {
             $architecture = uname -m
